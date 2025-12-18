@@ -12,10 +12,17 @@ import {
   ChevronRight,
   ChevronLeft,
   Sparkles,
-  Clock,
   Navigation,
   Search,
-  User
+  User,
+  Mail,
+  Instagram,
+  UtensilsCrossed,
+  Building2,
+  Calendar,
+  Leaf,
+  Award,
+  Key
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -54,6 +61,7 @@ export default function DestinationDetailPage() {
 
   const heroImage = destination.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800&q=80';
   const allImages = [heroImage, ...(destination.gallery || [])];
+  const tagline = destination.subline || destination.short_summary || destination.ai_short_summary;
 
   const handleSave = () => {
     setIsSaved(!isSaved);
@@ -67,7 +75,7 @@ export default function DestinationDetailPage() {
       try {
         await navigator.share({
           title: destination.name,
-          text: destination.description || '',
+          text: tagline || '',
           url: window.location.href,
         });
       } catch {
@@ -80,13 +88,8 @@ export default function DestinationDetailPage() {
     }
   };
 
-  const nextImage = () => {
-    setActiveImage((prev) => (prev + 1) % allImages.length);
-  };
-
-  const prevImage = () => {
-    setActiveImage((prev) => (prev - 1 + allImages.length) % allImages.length);
-  };
+  const nextImage = () => setActiveImage((prev) => (prev + 1) % allImages.length);
+  const prevImage = () => setActiveImage((prev) => (prev - 1 + allImages.length) % allImages.length);
 
   const lat = destination.latitude || 0;
   const lng = destination.longitude || 0;
@@ -98,11 +101,23 @@ export default function DestinationDetailPage() {
     ? `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`
     : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(destination.address || destination.name)}`;
 
+  // Get booking URL
+  const bookingUrl = destination.booking_url || destination.opentable_url || destination.resy_url || destination.website;
+
+  // Combine all tags
+  const allTags = [
+    ...(destination.vibe_tags || []),
+    ...(destination.style_tags || []),
+    ...(destination.ambience_tags || []),
+    ...(destination.experience_tags || []),
+    ...(destination.tags || []),
+  ].filter((v, i, a) => a.indexOf(v) === i); // Remove duplicates
+
   return (
     <>
       <Helmet>
         <title>{destination.name} | Urban Manual</title>
-        <meta name="description" content={destination.description || `Discover ${destination.name} in ${destination.city}`} />
+        <meta name="description" content={tagline || `Discover ${destination.name} in ${destination.city}`} />
       </Helmet>
 
       <div className="min-h-screen bg-[#0D1117]">
@@ -116,10 +131,6 @@ export default function DestinationDetailPage() {
               <button className="hidden md:flex items-center gap-2 h-10 px-4 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 transition-colors">
                 <Search className="h-4 w-4" />
                 <span className="text-sm">Search...</span>
-                <kbd className="ml-4 text-xs bg-white/10 px-1.5 py-0.5 rounded">⌘K</kbd>
-              </button>
-              <button className="hidden md:block text-sm text-gray-400 hover:text-white transition-colors px-3">
-                Trips
               </button>
               <button className="h-10 px-4 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5 transition-colors flex items-center gap-2">
                 <User className="h-4 w-4" />
@@ -131,40 +142,43 @@ export default function DestinationDetailPage() {
 
         {/* Main Content */}
         <main className="pt-16">
-          {/* Hero Section with Image */}
+          {/* Hero Section */}
           <div className="relative">
-            {/* Hero Image */}
             <div className="absolute top-0 right-0 w-full lg:w-1/2 h-[300px] lg:h-[400px]">
-              <img
-                src={allImages[activeImage]}
-                alt={destination.name}
-                className="w-full h-full object-cover"
-              />
+              <img src={allImages[activeImage]} alt={destination.name} className="w-full h-full object-cover" />
               <div className="absolute inset-0 bg-gradient-to-r from-[#0D1117] via-[#0D1117]/60 to-transparent lg:block hidden" />
               <div className="absolute inset-0 bg-gradient-to-t from-[#0D1117] to-transparent lg:hidden" />
               
-              {/* Michelin Stars Badge */}
-              {destination.michelin_stars && destination.michelin_stars > 0 && (
-                <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-red-600 text-white text-xs font-medium flex items-center gap-1">
-                  <Star className="h-3 w-3 fill-current" />
-                  {destination.michelin_stars} Star{destination.michelin_stars > 1 ? 's' : ''}
-                </div>
-              )}
+              {/* Badges */}
+              <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                {destination.michelin_stars && destination.michelin_stars > 0 && (
+                  <div className="px-3 py-1.5 rounded-full bg-red-600 text-white text-xs font-medium flex items-center gap-1">
+                    <Star className="h-3 w-3 fill-current" />
+                    {destination.michelin_stars} Michelin Star{destination.michelin_stars > 1 ? 's' : ''}
+                  </div>
+                )}
+                {destination.michelin_keys && destination.michelin_keys > 0 && (
+                  <div className="px-3 py-1.5 rounded-full bg-amber-600 text-white text-xs font-medium flex items-center gap-1">
+                    <Key className="h-3 w-3" />
+                    {destination.michelin_keys} Key{destination.michelin_keys > 1 ? 's' : ''}
+                  </div>
+                )}
+                {destination.crown && (
+                  <div className="px-3 py-1.5 rounded-full bg-purple-600 text-white text-xs font-medium flex items-center gap-1">
+                    <Award className="h-3 w-3" />
+                    Crown
+                  </div>
+                )}
+              </div>
               
               {/* Image Navigation */}
               {allImages.length > 1 && (
                 <div className="absolute bottom-4 right-4 flex items-center gap-2">
-                  <button
-                    onClick={prevImage}
-                    className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white/80 hover:bg-black/60 transition-colors"
-                  >
+                  <button onClick={prevImage} className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white/80 hover:bg-black/60 transition-colors">
                     <ChevronLeft className="h-4 w-4" />
                   </button>
                   <span className="text-sm text-white/80">{activeImage + 1}/{allImages.length}</span>
-                  <button
-                    onClick={nextImage}
-                    className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white/80 hover:bg-black/60 transition-colors"
-                  >
+                  <button onClick={nextImage} className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white/80 hover:bg-black/60 transition-colors">
                     <ChevronRight className="h-4 w-4" />
                   </button>
                 </div>
@@ -173,49 +187,44 @@ export default function DestinationDetailPage() {
 
             {/* Content Overlay */}
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-[320px] lg:pt-10">
-              {/* Back Link */}
-              <button
-                onClick={() => navigate('/')}
-                className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8"
-              >
+              <button onClick={() => navigate('/')} className="inline-flex items-center gap-2 text-gray-400 hover:text-white transition-colors mb-8">
                 <ArrowLeft className="h-4 w-4" />
                 <span className="text-sm">All Destinations</span>
               </button>
 
-              {/* Category Label */}
-              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">
-                {destination.category}
-              </p>
+              {/* Category & Brand */}
+              <div className="flex items-center gap-2 mb-2">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{destination.category}</p>
+                {destination.brand && (
+                  <>
+                    <span className="text-gray-600">·</span>
+                    <p className="text-xs font-medium text-gray-500">{destination.brand}</p>
+                  </>
+                )}
+              </div>
 
-              {/* Title */}
-              <h1 className="text-3xl lg:text-4xl font-semibold text-white mb-2 max-w-xl">
-                {destination.name}
-              </h1>
+              <h1 className="text-3xl lg:text-4xl font-semibold text-white mb-2 max-w-xl">{destination.name}</h1>
 
-              {/* Meta Info */}
+              {/* Tagline */}
+              {tagline && <p className="text-lg text-gray-300 mb-4 max-w-xl italic">{tagline}</p>}
+
+              {/* Location & Price */}
               <p className="text-gray-400 mb-6 max-w-xl">
+                {destination.neighborhood && `${destination.neighborhood}, `}
                 {destination.city}{destination.country ? `, ${destination.country}` : ''}
                 {destination.price_level && ` · ${'$'.repeat(destination.price_level)}`}
               </p>
 
               {/* Action Buttons */}
               <div className="flex items-center gap-3 mb-8">
-                <button
-                  onClick={handleSave}
-                  className={cn(
-                    "h-10 px-4 rounded-lg border flex items-center gap-2 transition-colors",
-                    isSaved 
-                      ? "bg-red-500/10 border-red-500/30 text-red-400" 
-                      : "border-white/10 text-gray-300 hover:bg-white/5"
-                  )}
-                >
+                <button onClick={handleSave} className={cn(
+                  "h-10 px-4 rounded-lg border flex items-center gap-2 transition-colors",
+                  isSaved ? "bg-red-500/10 border-red-500/30 text-red-400" : "border-white/10 text-gray-300 hover:bg-white/5"
+                )}>
                   <Heart className={cn("h-4 w-4", isSaved && "fill-current")} />
                   <span className="text-sm">{isSaved ? 'Saved' : 'Save'}</span>
                 </button>
-                <button
-                  onClick={handleShare}
-                  className="h-10 px-4 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5 transition-colors flex items-center gap-2"
-                >
+                <button onClick={handleShare} className="h-10 px-4 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5 transition-colors flex items-center gap-2">
                   <Share2 className="h-4 w-4" />
                   <span className="text-sm">Share</span>
                 </button>
@@ -223,18 +232,16 @@ export default function DestinationDetailPage() {
                   <div className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
                     <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
                     <span className="text-sm font-medium text-white">{destination.rating.toFixed(1)}</span>
+                    {destination.reviews_count && <span className="text-sm text-gray-500">({destination.reviews_count})</span>}
                   </div>
                 )}
               </div>
 
-              {/* Tags/Badges */}
-              {(destination.vibe_tags || destination.tags) && (
+              {/* Tags */}
+              {allTags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-12">
-                  {[...(destination.vibe_tags || []), ...(destination.tags || [])].slice(0, 5).map((tag, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-gray-300"
-                    >
+                  {allTags.slice(0, 8).map((tag, idx) => (
+                    <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-gray-300">
                       <Sparkles className="h-3 w-3 text-amber-400" />
                       {tag}
                     </span>
@@ -250,29 +257,80 @@ export default function DestinationDetailPage() {
               {/* Left Column */}
               <div className="lg:col-span-7 space-y-10">
                 {/* Description */}
-                {(destination.description || destination.content) && (
+                {(destination.description || destination.content || destination.design_story) && (
                   <div>
                     <h2 className="text-lg font-medium text-white mb-4">About</h2>
-                    <p className="text-gray-400 leading-relaxed">
-                      {destination.description || destination.content}
-                    </p>
+                    <div className="text-gray-400 leading-relaxed space-y-4">
+                      {destination.description && <p>{destination.description}</p>}
+                      {destination.content && destination.content !== destination.description && <p>{destination.content}</p>}
+                      {destination.design_story && (
+                        <div className="mt-6 pt-6 border-t border-white/5">
+                          <h3 className="text-sm font-medium text-white mb-2">Design Story</h3>
+                          <p>{destination.design_story}</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
 
-                {/* Gallery Grid */}
+                {/* Cuisine & Dietary */}
+                {(destination.cuisine_type?.length || destination.dietary_options?.length || destination.chef_name) && (
+                  <div>
+                    <h2 className="text-lg font-medium text-white mb-4">Cuisine & Dining</h2>
+                    <div className="space-y-4">
+                      {destination.chef_name && (
+                        <div className="flex items-center gap-3">
+                          <UtensilsCrossed className="h-5 w-5 text-gray-500" />
+                          <span className="text-gray-400">Chef: <span className="text-white">{destination.chef_name}</span></span>
+                        </div>
+                      )}
+                      {destination.cuisine_type?.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {destination.cuisine_type.map((cuisine, idx) => (
+                            <span key={idx} className="px-3 py-1.5 rounded-full text-xs bg-orange-500/10 text-orange-300 border border-orange-500/20">
+                              {cuisine}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {destination.dietary_options?.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
+                          {destination.dietary_options.map((diet, idx) => (
+                            <span key={idx} className="px-3 py-1.5 rounded-full text-xs bg-green-500/10 text-green-300 border border-green-500/20 flex items-center gap-1">
+                              <Leaf className="h-3 w-3" />
+                              {diet}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Amenities */}
+                {destination.amenities?.length > 0 && (
+                  <div>
+                    <h2 className="text-lg font-medium text-white mb-4">Amenities</h2>
+                    <div className="flex flex-wrap gap-2">
+                      {destination.amenities.map((amenity, idx) => (
+                        <span key={idx} className="px-3 py-1.5 rounded-full text-xs bg-white/5 text-gray-300 border border-white/10">
+                          {amenity}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Gallery */}
                 {allImages.length > 1 && (
                   <div>
                     <h2 className="text-lg font-medium text-white mb-4">Gallery</h2>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                       {allImages.map((img, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => setActiveImage(idx)}
-                          className={cn(
-                            "relative aspect-[4/3] rounded-xl overflow-hidden transition-all",
-                            activeImage === idx ? "ring-2 ring-white/30" : "opacity-60 hover:opacity-100"
-                          )}
-                        >
+                        <button key={idx} onClick={() => setActiveImage(idx)} className={cn(
+                          "relative aspect-[4/3] rounded-xl overflow-hidden transition-all",
+                          activeImage === idx ? "ring-2 ring-white/30" : "opacity-60 hover:opacity-100"
+                        )}>
                           <img src={img} alt="" className="w-full h-full object-cover" />
                         </button>
                       ))}
@@ -285,36 +343,20 @@ export default function DestinationDetailPage() {
                   <div>
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-lg font-medium text-white">Location</h2>
-                      <a
-                        href={directionsUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-sm text-gray-500 hover:text-white transition-colors"
-                      >
+                      <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-gray-500 hover:text-white transition-colors">
                         <Navigation className="h-4 w-4" />
                         Get Directions
                       </a>
                     </div>
-                    <a
-                      href={directionsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="block relative rounded-xl overflow-hidden border border-white/10 group"
-                    >
+                    <a href={directionsUrl} target="_blank" rel="noopener noreferrer" className="block relative rounded-xl overflow-hidden border border-white/10 group">
                       <div className="aspect-[2/1] bg-gray-800 relative">
                         {hasCoordinates ? (
-                          <iframe
-                            src={osmStaticUrl}
-                            className="w-full h-full border-0 grayscale invert opacity-90"
-                            title="Location map"
-                            loading="lazy"
-                          />
+                          <iframe src={osmStaticUrl} className="w-full h-full border-0 grayscale invert opacity-90" title="Location map" loading="lazy" />
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
                             <MapPin className="h-8 w-8 text-gray-600" />
                           </div>
                         )}
-                        <div className="absolute inset-0 pointer-events-none group-hover:bg-white/5 transition-colors" />
                       </div>
                       {destination.address && (
                         <div className="absolute bottom-4 left-4 px-4 py-2 rounded-lg bg-black/80 backdrop-blur-sm">
@@ -326,27 +368,20 @@ export default function DestinationDetailPage() {
                 )}
               </div>
 
-              {/* Right Column - Sticky Info */}
+              {/* Right Column */}
               <div className="lg:col-span-5">
                 <div className="lg:sticky lg:top-24 space-y-4">
                   {/* Book Button */}
-                  {destination.website && (
-                    <a
-                      href={destination.website.startsWith('http') ? destination.website : `https://${destination.website}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <Button
-                        size="lg"
-                        className="w-full h-12 rounded-xl bg-white hover:bg-gray-100 text-gray-900 font-medium"
-                      >
+                  {bookingUrl && (
+                    <a href={bookingUrl.startsWith('http') ? bookingUrl : `https://${bookingUrl}`} target="_blank" rel="noopener noreferrer">
+                      <Button size="lg" className="w-full h-12 rounded-xl bg-white hover:bg-gray-100 text-gray-900 font-medium">
                         <ExternalLink className="h-4 w-4 mr-2" />
-                        Visit Website
+                        {destination.booking_url || destination.opentable_url || destination.resy_url ? 'Book Now' : 'Visit Website'}
                       </Button>
                     </a>
                   )}
 
-                  {/* Info Cards */}
+                  {/* Contact Info */}
                   <div className="p-5 rounded-xl bg-white/5 border border-white/5 space-y-4">
                     {destination.address && (
                       <>
@@ -357,6 +392,7 @@ export default function DestinationDetailPage() {
                           <div>
                             <p className="text-sm font-medium text-white mb-0.5">Address</p>
                             <p className="text-sm text-gray-400">{destination.address}</p>
+                            {destination.neighborhood && <p className="text-xs text-gray-500 mt-1">{destination.neighborhood}</p>}
                           </div>
                         </div>
                         <div className="h-px bg-white/5" />
@@ -370,11 +406,8 @@ export default function DestinationDetailPage() {
                             <Phone className="h-5 w-5 text-gray-400" />
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-white mb-0.5">Contact</p>
-                            <a 
-                              href={`tel:${destination.phone_number}`}
-                              className="text-sm text-gray-400 hover:text-white transition-colors"
-                            >
+                            <p className="text-sm font-medium text-white mb-0.5">Phone</p>
+                            <a href={`tel:${destination.phone_number}`} className="text-sm text-gray-400 hover:text-white transition-colors">
                               {destination.phone_number}
                             </a>
                           </div>
@@ -383,20 +416,49 @@ export default function DestinationDetailPage() {
                       </>
                     )}
 
+                    {destination.email && (
+                      <>
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                            <Mail className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-white mb-0.5">Email</p>
+                            <a href={`mailto:${destination.email}`} className="text-sm text-gray-400 hover:text-white transition-colors">
+                              {destination.email}
+                            </a>
+                          </div>
+                        </div>
+                        <div className="h-px bg-white/5" />
+                      </>
+                    )}
+
                     {destination.website && (
+                      <>
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
+                            <Globe className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-white mb-0.5">Website</p>
+                            <a href={destination.website.startsWith('http') ? destination.website : `https://${destination.website}`} target="_blank" rel="noopener noreferrer" className="text-sm text-gray-400 hover:text-white transition-colors">
+                              Visit website
+                            </a>
+                          </div>
+                        </div>
+                        <div className="h-px bg-white/5" />
+                      </>
+                    )}
+
+                    {(destination.instagram_url || destination.instagram_handle) && (
                       <div className="flex items-start gap-3">
                         <div className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center shrink-0">
-                          <Globe className="h-5 w-5 text-gray-400" />
+                          <Instagram className="h-5 w-5 text-gray-400" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-white mb-0.5">Website</p>
-                          <a 
-                            href={destination.website.startsWith('http') ? destination.website : `https://${destination.website}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-sm text-gray-400 hover:text-white transition-colors"
-                          >
-                            Visit official site
+                          <p className="text-sm font-medium text-white mb-0.5">Instagram</p>
+                          <a href={destination.instagram_url || `https://instagram.com/${destination.instagram_handle}`} target="_blank" rel="noopener noreferrer" className="text-sm text-gray-400 hover:text-white transition-colors">
+                            @{destination.instagram_handle || 'View profile'}
                           </a>
                         </div>
                       </div>
@@ -404,14 +466,23 @@ export default function DestinationDetailPage() {
                   </div>
 
                   {/* Architecture Info */}
-                  {(destination.architect || destination.architectural_style) && (
+                  {(destination.architect || destination.architectural_style || destination.design_firm || destination.design_period || destination.materials?.length) && (
                     <div className="p-5 rounded-xl bg-white/5 border border-white/5">
-                      <h3 className="text-sm font-medium text-white mb-3">Design & Architecture</h3>
+                      <h3 className="text-sm font-medium text-white mb-4 flex items-center gap-2">
+                        <Building2 className="h-4 w-4" />
+                        Design & Architecture
+                      </h3>
                       <div className="space-y-3">
                         {destination.architect && (
                           <div className="flex items-center justify-between">
                             <span className="text-sm text-gray-500">Architect</span>
                             <span className="text-sm text-gray-300">{destination.architect}</span>
+                          </div>
+                        )}
+                        {destination.design_firm && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-500">Design Firm</span>
+                            <span className="text-sm text-gray-300">{destination.design_firm}</span>
                           </div>
                         )}
                         {destination.architectural_style && (
@@ -420,20 +491,57 @@ export default function DestinationDetailPage() {
                             <span className="text-sm text-gray-300">{destination.architectural_style}</span>
                           </div>
                         )}
+                        {destination.design_period && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-gray-500">Period</span>
+                            <span className="text-sm text-gray-300">{destination.design_period}</span>
+                          </div>
+                        )}
+                        {destination.materials?.length > 0 && (
+                          <div className="pt-2">
+                            <span className="text-sm text-gray-500 block mb-2">Materials</span>
+                            <div className="flex flex-wrap gap-1.5">
+                              {destination.materials.map((material, idx) => (
+                                <span key={idx} className="px-2 py-1 rounded text-xs bg-white/5 text-gray-400">
+                                  {material}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
 
-                  {/* Tags */}
-                  {(destination.vibe_tags || destination.tags) && (
+                  {/* Best Time to Visit */}
+                  {(destination.best_months?.length || destination.peak_season) && (
                     <div className="p-5 rounded-xl bg-white/5 border border-white/5">
-                      <h3 className="text-sm font-medium text-white mb-3">Highlights</h3>
+                      <h3 className="text-sm font-medium text-white mb-3 flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        Best Time to Visit
+                      </h3>
+                      {destination.best_months?.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          {destination.best_months.map((month, idx) => (
+                            <span key={idx} className="px-2 py-1 rounded text-xs bg-blue-500/10 text-blue-300 border border-blue-500/20">
+                              {month}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      {destination.peak_season && (
+                        <p className="text-sm text-gray-400">Peak season: {destination.peak_season}</p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* All Tags */}
+                  {allTags.length > 8 && (
+                    <div className="p-5 rounded-xl bg-white/5 border border-white/5">
+                      <h3 className="text-sm font-medium text-white mb-3">All Tags</h3>
                       <div className="flex flex-wrap gap-2">
-                        {[...(destination.vibe_tags || []), ...(destination.tags || [])].map((tag, idx) => (
-                          <span
-                            key={idx}
-                            className="px-3 py-1.5 rounded-full text-xs bg-white/5 text-gray-300 border border-white/5"
-                          >
+                        {allTags.map((tag, idx) => (
+                          <span key={idx} className="px-3 py-1.5 rounded-full text-xs bg-white/5 text-gray-300 border border-white/5">
                             {tag}
                           </span>
                         ))}
