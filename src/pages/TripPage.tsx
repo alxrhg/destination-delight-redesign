@@ -11,20 +11,28 @@ import { ItineraryCard } from "@/components/trip/ItineraryCard";
 import { TripSidebar } from "@/components/trip/TripSidebar";
 import { useTrip, useItineraryItems, useCityDestinations } from "@/hooks/useTrip";
 
+const isValidUUID = (id: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
 const TripPage = () => {
   const { tripId } = useParams<{ tripId: string }>();
   const [selectedDay, setSelectedDay] = useState(1);
 
-  const isValidUUID = (id: string) =>
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+  const isValid = tripId && !tripId.startsWith(":") && isValidUUID(tripId);
 
-  if (!tripId || tripId.startsWith(":" ) || !isValidUUID(tripId)) {
+  // All hooks must be called unconditionally (before any returns)
+  const { data: trip, isLoading: tripLoading, error: tripError } = useTrip(isValid ? tripId : undefined);
+  const { data: itineraryItems = [] } = useItineraryItems(isValid ? tripId : undefined);
+  const { data: suggestedPlaces = [] } = useCityDestinations(trip?.destination ?? null);
+
+  // Early returns AFTER hooks
+  if (!isValid) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center space-y-4 max-w-md">
           <h1 className="text-2xl font-semibold">Trip not found</h1>
           <p className="text-muted-foreground">
-            This page needs a real Trip ID in the URL (a UUID). You’re currently on <code className="px-1 py-0.5 rounded bg-muted">/trip/:tripId</code>.
+            This page needs a real Trip ID in the URL (a UUID). You're currently on <code className="px-1 py-0.5 rounded bg-muted">/trip/:tripId</code>.
           </p>
           <div className="flex items-center justify-center gap-2">
             <Button onClick={() => (window.location.href = "/")}>Go Home</Button>
@@ -36,10 +44,6 @@ const TripPage = () => {
       </div>
     );
   }
-
-  const { data: trip, isLoading: tripLoading, error: tripError } = useTrip(tripId);
-  const { data: itineraryItems = [] } = useItineraryItems(tripId);
-  const { data: suggestedPlaces = [] } = useCityDestinations(trip?.destination ?? null);
 
   if (tripLoading) {
     return (
