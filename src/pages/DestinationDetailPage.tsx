@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  ChevronLeft, 
+  X, 
   Heart, 
   Share2, 
   Star, 
@@ -10,32 +10,14 @@ import {
   Phone,
   Mail,
   Globe,
-  Clock,
-  Images,
-  Check,
-  Wifi,
-  Coffee,
-  Utensils,
-  Wine,
-  PawPrint,
-  Sparkles,
-  Award
+  ChevronRight,
+  Sparkles
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { mockDestinationDetail } from '@/data/destinationDetail';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Helmet } from 'react-helmet-async';
-
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  Wifi,
-  Coffee,
-  Utensils,
-  Wine,
-  PawPrint,
-  Clock,
-};
 
 export default function DestinationDetailPage() {
   const navigate = useNavigate();
@@ -50,7 +32,6 @@ export default function DestinationDetailPage() {
     setIsSaved(!isSaved);
     toast({
       title: isSaved ? 'Removed from saved' : 'Saved to collection',
-      description: isSaved ? `${destination.name} removed` : `${destination.name} added to your saved places`,
     });
   };
 
@@ -64,12 +45,20 @@ export default function DestinationDetailPage() {
         });
       } catch {
         navigator.clipboard.writeText(window.location.href);
-        toast({ title: 'Link copied to clipboard' });
+        toast({ title: 'Link copied' });
       }
     } else {
       navigator.clipboard.writeText(window.location.href);
-      toast({ title: 'Link copied to clipboard' });
+      toast({ title: 'Link copied' });
     }
+  };
+
+  const nextImage = () => {
+    setActiveImage((prev) => (prev + 1) % allImages.length);
+  };
+
+  const prevImage = () => {
+    setActiveImage((prev) => (prev - 1 + allImages.length) % allImages.length);
   };
 
   return (
@@ -79,258 +68,187 @@ export default function DestinationDetailPage() {
         <meta name="description" content={destination.tagline} />
       </Helmet>
 
-      <div className="min-h-screen bg-background">
-        {/* Header */}
-        <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/50">
-          <div className="container max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              onClick={() => navigate('/')}
-              className="gap-2"
-            >
-              <ChevronLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Back</span>
-            </Button>
+      <div className="min-h-screen bg-black">
+        {/* Hero Image Section */}
+        <div className="relative h-[60vh] min-h-[400px]">
+          {/* Image */}
+          <img
+            src={allImages[activeImage]}
+            alt={destination.name}
+            className="w-full h-full object-cover"
+            onClick={nextImage}
+          />
 
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleSave}
-                className={cn(isSaved && "text-red-500")}
-              >
-                <Heart className={cn("h-5 w-5", isSaved && "fill-current")} />
-              </Button>
-              <Button variant="ghost" size="icon" onClick={handleShare}>
-                <Share2 className="h-5 w-5" />
-              </Button>
-            </div>
+          {/* Close Button */}
+          <button
+            onClick={() => navigate('/')}
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white/80 hover:text-white hover:bg-black/60 transition-all"
+          >
+            <X className="h-5 w-5" />
+          </button>
+
+          {/* Image Counter */}
+          <div className="absolute bottom-4 left-4 flex items-center gap-2 text-white/80 text-sm">
+            <div className="w-5 h-5 rounded-full border-2 border-white/40" />
+            <span>{activeImage + 1}/{allImages.length}</span>
           </div>
-        </header>
 
-        <main className="pt-14">
-          {/* Hero Section */}
-          <section className="relative">
-            {/* Image Gallery */}
-            <div className="relative aspect-[16/9] md:aspect-[21/9] overflow-hidden">
-              <img
-                src={allImages[activeImage]}
-                alt={destination.name}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
-              
-              {/* Image Navigation */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
-                {allImages.slice(0, 5).map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setActiveImage(idx)}
-                    className={cn(
-                      "w-2 h-2 rounded-full transition-all",
-                      activeImage === idx ? "bg-foreground w-6" : "bg-foreground/40"
-                    )}
-                  />
+          {/* Action Buttons */}
+          <div className="absolute top-4 left-4 flex items-center gap-2">
+            <button
+              onClick={handleSave}
+              className={cn(
+                "w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center transition-all",
+                isSaved ? "text-red-500" : "text-white/80 hover:text-white"
+              )}
+            >
+              <Heart className={cn("h-5 w-5", isSaved && "fill-current")} />
+            </button>
+            <button
+              onClick={handleShare}
+              className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center text-white/80 hover:text-white transition-all"
+            >
+              <Share2 className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Content Sheet */}
+        <div className="relative -mt-6 bg-[#F8F6F3] rounded-t-3xl min-h-[50vh]">
+          <div className="px-5 pt-6 pb-8">
+            {/* Header Row */}
+            <div className="flex items-start justify-between gap-4 mb-1">
+              <h1 className="text-2xl font-semibold text-gray-900">
+                {destination.name}
+              </h1>
+              <div className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-gray-200 bg-white shrink-0">
+                <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                <span className="text-sm font-medium text-gray-900">{destination.rating}</span>
+              </div>
+            </div>
+
+            {/* Meta Info */}
+            <p className="text-sm text-gray-500 mb-4">
+              {destination.category} · {destination.city}, {destination.country} · {'€'.repeat(destination.priceLevel)}
+            </p>
+
+            {/* Divider */}
+            <div className="h-px bg-gray-200 mb-4" />
+
+            {/* Tagline */}
+            <p className="text-gray-900 mb-4">
+              <span className="font-medium">{destination.tagline.split('.')[0]}.</span>{' '}
+              <span className="text-gray-600">
+                {destination.description.split('.').slice(0, 2).join('.')}...
+              </span>
+            </p>
+
+            {/* Badges */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {destination.badges.map((badge, idx) => (
+                <span
+                  key={idx}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white border border-gray-200 text-gray-700"
+                >
+                  <Sparkles className="h-3 w-3" />
+                  {badge.label}
+                </span>
+              ))}
+            </div>
+
+            {/* Quick Actions */}
+            <div className="space-y-2 mb-6">
+              <button className="w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                    <MapPin className="h-5 w-5 text-gray-600" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-medium text-gray-900">Location</p>
+                    <p className="text-xs text-gray-500">{destination.contact.address}</p>
+                  </div>
+                </div>
+                <ChevronRight className="h-5 w-5 text-gray-400" />
+              </button>
+
+              <button className="w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                    <Phone className="h-5 w-5 text-gray-600" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-medium text-gray-900">Contact</p>
+                    <p className="text-xs text-gray-500">{destination.contact.phone}</p>
+                  </div>
+                </div>
+                <ChevronRight className="h-5 w-5 text-gray-400" />
+              </button>
+
+              <button className="w-full flex items-center justify-between p-4 bg-white rounded-2xl border border-gray-100">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                    <Globe className="h-5 w-5 text-gray-600" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-medium text-gray-900">Website</p>
+                    <p className="text-xs text-gray-500">Visit official site</p>
+                  </div>
+                </div>
+                <ChevronRight className="h-5 w-5 text-gray-400" />
+              </button>
+            </div>
+
+            {/* Reviews Preview */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-semibold text-gray-900">Reviews</h2>
+                <button className="text-sm text-gray-500">See all</button>
+              </div>
+              <div className="flex gap-3 overflow-x-auto pb-2 -mx-5 px-5 scrollbar-hide">
+                {destination.reviews.map((review) => (
+                  <div
+                    key={review.id}
+                    className="shrink-0 w-64 p-4 bg-white rounded-2xl border border-gray-100"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <img
+                        src={review.avatar}
+                        alt={review.author}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{review.author}</p>
+                        <div className="flex items-center gap-1">
+                          {[...Array(5)].map((_, i) => (
+                            <Star
+                              key={i}
+                              className={cn(
+                                "h-3 w-3",
+                                i < review.rating
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-gray-200"
+                              )}
+                            />
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-600 line-clamp-3">{review.text}</p>
+                  </div>
                 ))}
               </div>
-
-              {/* Gallery Button */}
-              <Button
-                variant="secondary"
-                size="sm"
-                className="absolute bottom-4 right-4 gap-2 rounded-full"
-              >
-                <Images className="h-4 w-4" />
-                {allImages.length} photos
-              </Button>
             </div>
 
-            {/* Content Overlay */}
-            <div className="container max-w-6xl mx-auto px-4 -mt-24 relative z-10">
-              <div className="bg-card rounded-2xl border border-border/50 p-6 md:p-8">
-                {/* Badges */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {destination.badges.map((badge, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-secondary text-foreground"
-                    >
-                      {badge.type === 'featured' ? <Sparkles className="h-3 w-3" /> : <Award className="h-3 w-3" />}
-                      {badge.label}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Title & Meta */}
-                <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
-                  <div>
-                    <h1 className="text-3xl md:text-4xl font-semibold text-foreground mb-2">
-                      {destination.name}
-                    </h1>
-                    <p className="text-lg text-muted-foreground mb-3">
-                      {destination.tagline}
-                    </p>
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1.5">
-                        <MapPin className="h-4 w-4" />
-                        {destination.city}, {destination.country}
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <Star className="h-4 w-4 fill-yellow-500 text-yellow-500" />
-                        <span className="text-foreground font-medium">{destination.rating}</span>
-                        ({destination.reviewCount.toLocaleString()} reviews)
-                      </span>
-                      <span>
-                        {'€'.repeat(destination.priceLevel)}
-                        <span className="text-muted-foreground/40">{'€'.repeat(4 - destination.priceLevel)}</span>
-                      </span>
-                    </div>
-                  </div>
-
-                  <Button size="lg" className="rounded-full gap-2 shrink-0">
-                    <ExternalLink className="h-4 w-4" />
-                    Book Now
-                  </Button>
-                </div>
-
-                {/* Quick Info Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {destination.hours.map((item, idx) => (
-                    <div key={idx} className="bg-secondary/50 rounded-xl p-4">
-                      <p className="text-xs text-muted-foreground mb-1">{item.day}</p>
-                      <p className="text-sm font-medium text-foreground">{item.time}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Content Grid */}
-          <section className="container max-w-6xl mx-auto px-4 py-8">
-            <div className="grid lg:grid-cols-3 gap-8">
-              {/* Main Content */}
-              <div className="lg:col-span-2 space-y-8">
-                {/* About */}
-                <div>
-                  <h2 className="text-xl font-semibold text-foreground mb-4">About</h2>
-                  <div className="prose prose-invert max-w-none">
-                    {destination.description.split('\n\n').map((para, idx) => (
-                      <p key={idx} className="text-muted-foreground leading-relaxed mb-4">
-                        {para}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Highlights */}
-                <div>
-                  <h2 className="text-xl font-semibold text-foreground mb-4">Highlights</h2>
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    {destination.highlights.map((highlight, idx) => (
-                      <div key={idx} className="flex items-center gap-3 p-4 bg-card rounded-xl border border-border/50">
-                        <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center shrink-0">
-                          <Check className="h-4 w-4 text-green-500" />
-                        </div>
-                        <span className="text-sm text-foreground">{highlight}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Reviews */}
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold text-foreground">Reviews</h2>
-                    <Button variant="ghost" size="sm" className="text-muted-foreground">
-                      See all
-                    </Button>
-                  </div>
-                  <div className="space-y-4">
-                    {destination.reviews.map((review) => (
-                      <div key={review.id} className="p-4 bg-card rounded-xl border border-border/50">
-                        <div className="flex items-start gap-3 mb-3">
-                          <Avatar className="h-10 w-10">
-                            <AvatarImage src={review.avatar} />
-                            <AvatarFallback>{review.author[0]}</AvatarFallback>
-                          </Avatar>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <p className="font-medium text-foreground">{review.author}</p>
-                              <div className="flex items-center gap-1">
-                                <Star className="h-3.5 w-3.5 fill-yellow-500 text-yellow-500" />
-                                <span className="text-sm text-foreground">{review.rating}</span>
-                              </div>
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                              {new Date(review.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                            </p>
-                          </div>
-                        </div>
-                        <p className="text-sm text-muted-foreground">{review.text}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Sidebar */}
-              <div className="space-y-6">
-                {/* Amenities */}
-                <div className="bg-card rounded-xl border border-border/50 p-5">
-                  <h3 className="font-semibold text-foreground mb-4">Amenities</h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    {destination.amenities.map((amenity, idx) => {
-                      const Icon = iconMap[amenity.icon] || Wifi;
-                      return (
-                        <div key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Icon className="h-4 w-4" />
-                          {amenity.label}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Contact */}
-                <div className="bg-card rounded-xl border border-border/50 p-5 space-y-4">
-                  <h3 className="font-semibold text-foreground">Contact</h3>
-                  
-                  <div className="space-y-3">
-                    {destination.contact.phone && (
-                      <a href={`tel:${destination.contact.phone}`} className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                        <Phone className="h-4 w-4" />
-                        {destination.contact.phone}
-                      </a>
-                    )}
-                    {destination.contact.email && (
-                      <a href={`mailto:${destination.contact.email}`} className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                        <Mail className="h-4 w-4" />
-                        {destination.contact.email}
-                      </a>
-                    )}
-                    {destination.contact.website && (
-                      <a href={destination.contact.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-sm text-muted-foreground hover:text-foreground transition-colors">
-                        <Globe className="h-4 w-4" />
-                        Visit website
-                      </a>
-                    )}
-                    <div className="flex items-start gap-3 text-sm text-muted-foreground">
-                      <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
-                      {destination.contact.address}
-                    </div>
-                  </div>
-
-                  <Button variant="outline" className="w-full gap-2 rounded-full">
-                    <MapPin className="h-4 w-4" />
-                    Get Directions
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </section>
-        </main>
+            {/* Book Button */}
+            <Button
+              size="lg"
+              className="w-full h-14 rounded-2xl bg-gray-900 hover:bg-gray-800 text-white font-medium text-base"
+            >
+              <ExternalLink className="h-5 w-5 mr-2" />
+              Book Now
+            </Button>
+          </div>
+        </div>
       </div>
     </>
   );
