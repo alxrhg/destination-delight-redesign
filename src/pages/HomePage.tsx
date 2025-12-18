@@ -37,6 +37,7 @@ export default function HomePage() {
             onCityChange={setSelectedCity}
             onCategoryChange={setSelectedCategory}
             totalDestinations={909}
+            featuredDestination={mockDestinations[0]}
           />
 
           <DestinationGrid

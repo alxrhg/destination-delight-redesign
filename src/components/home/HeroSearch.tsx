@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Search, MapPin } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { City, Category } from '@/types/destination';
+import { City, Category, Destination } from '@/types/destination';
 
 interface HeroSearchProps {
   cities: City[];
@@ -11,13 +10,7 @@ interface HeroSearchProps {
   onCityChange: (cityId: string) => void;
   onCategoryChange: (categoryId: string) => void;
   totalDestinations: number;
-}
-
-function getGreeting(): string {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning';
-  if (hour < 18) return 'Good afternoon';
-  return 'Good evening';
+  featuredDestination?: Destination;
 }
 
 export function HeroSearch({
@@ -27,103 +20,131 @@ export function HeroSearch({
   selectedCategory,
   onCityChange,
   onCategoryChange,
-  totalDestinations,
+  featuredDestination,
 }: HeroSearchProps) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const greeting = getGreeting();
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault();
-        document.getElementById('search-input')?.focus();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
 
   return (
-    <section className="pt-28 pb-8 px-4 lg:px-8">
-      <div className="max-w-3xl mx-auto text-center">
-        {/* Greeting */}
-        <h1 
-          className="text-3xl md:text-4xl lg:text-5xl font-semibold text-gray-900 mb-3 animate-fade-up"
-          style={{ animationDelay: '0.1s' }}
-        >
-          {greeting}
-        </h1>
-        <p 
-          className="text-gray-500 mb-8 animate-fade-up"
-          style={{ animationDelay: '0.2s' }}
-        >
-          Discover {totalDestinations}+ curated destinations worldwide
-        </p>
+    <section className="pt-20 lg:pt-0 lg:min-h-screen flex flex-col">
+      {/* Hero Section */}
+      <div className="flex-1 flex flex-col lg:flex-row">
+        {/* Left - Content */}
+        <div className="flex-1 flex flex-col justify-center px-6 lg:px-8 xl:px-16 py-16 lg:py-0">
+          <div className="max-w-xl">
+            {/* Eyebrow */}
+            <p 
+              className="text-sm tracking-[0.3em] uppercase text-gray-500 mb-6 animate-fade-up"
+              style={{ animationDelay: '0.1s' }}
+            >
+              Curated destinations worldwide
+            </p>
+            
+            {/* Main Headline */}
+            <h1 
+              className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-gray-900 leading-[1.1] mb-8 animate-fade-up"
+              style={{ animationDelay: '0.2s' }}
+            >
+              Discover places
+              <br />
+              that <span className="italic font-normal">matter</span>
+            </h1>
+            
+            {/* Subtitle */}
+            <p 
+              className="text-lg text-gray-500 max-w-md mb-10 animate-fade-up"
+              style={{ animationDelay: '0.3s' }}
+            >
+              A carefully selected collection of restaurants, hotels, and cultural experiences.
+            </p>
 
-        {/* Search Bar */}
-        <div 
-          className="relative mb-8 animate-fade-up"
-          style={{ animationDelay: '0.3s' }}
-        >
-          <div className="flex items-center bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-            <div className="flex items-center gap-3 flex-1 px-5 py-4">
-              <Search className="h-5 w-5 text-gray-400 flex-shrink-0" />
-              <input
-                id="search-input"
-                type="text"
-                placeholder="Search destinations, cities, or categories..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1 bg-transparent text-gray-900 placeholder:text-gray-400 outline-none text-base"
-              />
+            {/* CTA */}
+            <div 
+              className="flex flex-col sm:flex-row gap-4 animate-fade-up"
+              style={{ animationDelay: '0.4s' }}
+            >
+              <button className="inline-flex items-center justify-center gap-3 h-14 px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-full font-medium transition-colors">
+                Start exploring
+                <ArrowRight className="h-5 w-5" />
+              </button>
+              <button className="inline-flex items-center justify-center gap-3 h-14 px-8 border border-gray-300 hover:border-gray-400 text-gray-700 rounded-full font-medium transition-colors">
+                View collections
+              </button>
             </div>
-            <button className="m-2 px-5 py-3 bg-gray-900 hover:bg-gray-800 rounded-xl text-white text-sm font-medium transition-colors">
-              Search
-            </button>
           </div>
         </div>
 
-        {/* City Pills */}
-        <div 
-          className="flex flex-wrap items-center justify-center gap-2 mb-6 animate-fade-up"
-          style={{ animationDelay: '0.4s' }}
-        >
-          {cities.map((city) => (
-            <button
-              key={city.id}
-              onClick={() => onCityChange(city.id)}
-              className={cn(
-                "inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium transition-all",
-                selectedCity === city.id
-                  ? "bg-gray-900 text-white"
-                  : "bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
-              )}
-            >
-              <MapPin className="h-3.5 w-3.5" />
-              {city.name}
-            </button>
-          ))}
-        </div>
+        {/* Right - Featured Image */}
+        {featuredDestination && (
+          <div 
+            className="hidden lg:block lg:w-[45%] xl:w-1/2 relative animate-fade-up"
+            style={{ animationDelay: '0.3s' }}
+          >
+            <div className="absolute inset-y-0 right-0 left-0 overflow-hidden">
+              <img
+                src={featuredDestination.image}
+                alt={featuredDestination.name}
+                className="w-full h-full object-cover"
+              />
+              {/* Gradient overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-[#F8F6F3] via-[#F8F6F3]/20 to-transparent w-1/3" />
+              
+              {/* Featured badge */}
+              <div className="absolute bottom-8 left-8 right-8">
+                <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-lg max-w-sm">
+                  <p className="text-xs tracking-wide uppercase text-gray-400 mb-2">Featured</p>
+                  <h3 className="text-lg font-medium text-gray-900 mb-1">{featuredDestination.name}</h3>
+                  <p className="text-sm text-gray-500">{featuredDestination.category} · {featuredDestination.city}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
-        {/* Category Filters */}
-        <div 
-          className="flex flex-wrap items-center justify-center gap-2 animate-fade-up"
-          style={{ animationDelay: '0.5s' }}
-        >
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => onCategoryChange(category.id)}
-              className={cn(
-                "px-4 py-2 rounded-full text-sm font-medium transition-all",
-                selectedCategory === category.id
-                  ? "bg-gray-100 text-gray-900 border border-gray-300"
-                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-100"
-              )}
-            >
-              {category.name}
-            </button>
-          ))}
+      {/* Filter Bar */}
+      <div className="border-t border-gray-200 bg-white/50 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-5">
+          <div className="flex flex-col lg:flex-row lg:items-center gap-6">
+            {/* Cities */}
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2 lg:pb-0">
+              <span className="text-xs tracking-wide uppercase text-gray-400 shrink-0 mr-2">City</span>
+              {cities.map((city) => (
+                <button
+                  key={city.id}
+                  onClick={() => onCityChange(city.id)}
+                  className={cn(
+                    "shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all",
+                    selectedCity === city.id
+                      ? "bg-gray-900 text-white"
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  )}
+                >
+                  {city.name}
+                </button>
+              ))}
+            </div>
+
+            {/* Divider */}
+            <div className="hidden lg:block w-px h-8 bg-gray-200" />
+
+            {/* Categories */}
+            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+              <span className="text-xs tracking-wide uppercase text-gray-400 shrink-0 mr-2">Type</span>
+              {categories.slice(0, 6).map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => onCategoryChange(category.id)}
+                  className={cn(
+                    "shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all",
+                    selectedCategory === category.id
+                      ? "bg-gray-900 text-white"
+                      : "text-gray-600 hover:text-gray-900"
+                  )}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>
