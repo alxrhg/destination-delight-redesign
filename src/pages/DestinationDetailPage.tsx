@@ -12,7 +12,8 @@ import {
   ChevronRight,
   ChevronLeft,
   Sparkles,
-  Clock
+  Clock,
+  Navigation
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { mockDestinationDetail } from '@/data/destinationDetail';
@@ -61,6 +62,13 @@ export default function DestinationDetailPage() {
   const prevImage = () => {
     setActiveImage((prev) => (prev - 1 + allImages.length) % allImages.length);
   };
+
+  // Static map URL using OpenStreetMap tiles
+  const { lat, lng } = destination.coordinates;
+  const staticMapUrl = `https://api.mapbox.com/styles/v1/mapbox/light-v11/static/pin-l+1a1a1a(${lng},${lat})/${lng},${lat},15,0/600x300@2x?access_token=pk.eyJ1IjoibG92YWJsZS1kZW1vIiwiYSI6ImNtNHg5cjR6NjBtMjMybHE1MHp0YzY3YjAifQ.fake`;
+  const fallbackMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${lat},${lng}&zoom=15&size=600x300&scale=2&maptype=roadmap&markers=color:black%7C${lat},${lng}`;
+  const osmStaticUrl = `https://www.openstreetmap.org/export/embed.html?bbox=${lng - 0.01},${lat - 0.005},${lng + 0.01},${lat + 0.005}&layer=mapnik&marker=${lat},${lng}`;
+  const directionsUrl = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
 
   return (
     <>
@@ -196,6 +204,37 @@ export default function DestinationDetailPage() {
                 ))}
               </div>
             </div>
+
+            {/* Map Section - Mobile */}
+            <div className="mb-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-3">Location</h2>
+              <a
+                href={directionsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block relative rounded-2xl overflow-hidden border border-gray-100"
+              >
+                <div className="aspect-[2/1] bg-gray-100 relative">
+                  <iframe
+                    src={osmStaticUrl}
+                    className="w-full h-full border-0"
+                    title="Location map"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 pointer-events-none" />
+                </div>
+                <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between">
+                  <div className="px-3 py-2 rounded-xl bg-white/95 backdrop-blur-sm shadow-sm">
+                    <p className="text-xs text-gray-500">Address</p>
+                    <p className="text-sm font-medium text-gray-900 truncate max-w-[200px]">{destination.contact.address}</p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-gray-900 flex items-center justify-center shadow-lg">
+                    <Navigation className="h-4 w-4 text-white" />
+                  </div>
+                </div>
+              </a>
+            </div>
+
             <Button size="lg" className="w-full h-14 rounded-2xl bg-gray-900 hover:bg-gray-800 text-white font-medium text-base">
               <ExternalLink className="h-5 w-5 mr-2" />
               Book Now
@@ -319,6 +358,42 @@ export default function DestinationDetailPage() {
                       </div>
                     ))}
                   </div>
+                </div>
+
+                {/* Map Section - Desktop */}
+                <div className="mt-12">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-semibold text-gray-900">Location</h2>
+                    <a
+                      href={directionsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors"
+                    >
+                      <Navigation className="h-4 w-4" />
+                      Get Directions
+                    </a>
+                  </div>
+                  <a
+                    href={directionsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block relative rounded-2xl overflow-hidden border border-gray-100 group"
+                  >
+                    <div className="aspect-[2/1] bg-gray-100 relative">
+                      <iframe
+                        src={osmStaticUrl}
+                        className="w-full h-full border-0"
+                        title="Location map"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 pointer-events-none group-hover:bg-black/5 transition-colors" />
+                    </div>
+                    <div className="absolute bottom-4 left-4 px-4 py-3 rounded-xl bg-white/95 backdrop-blur-sm shadow-sm">
+                      <p className="text-xs text-gray-500 mb-0.5">Address</p>
+                      <p className="font-medium text-gray-900">{destination.contact.address}</p>
+                    </div>
+                  </a>
                 </div>
               </div>
 

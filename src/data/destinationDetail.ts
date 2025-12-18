@@ -52,6 +52,10 @@ Each of the 172 rooms tells its own story through original architectural details
     website: 'https://thehoxton.com/paris',
     address: '30-32 Rue du Sentier, 75002 Paris, France',
   },
+  coordinates: {
+    lat: 48.8686,
+    lng: 2.3469,
+  },
   reviews: [
     {
       id: '1',

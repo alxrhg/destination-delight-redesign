@@ -21,6 +21,10 @@ export interface DestinationDetail {
     website?: string;
     address: string;
   };
+  coordinates: {
+    lat: number;
+    lng: number;
+  };
   reviews: {
     id: string;
     author: string;
