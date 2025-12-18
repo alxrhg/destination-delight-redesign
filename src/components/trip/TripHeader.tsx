@@ -24,7 +24,7 @@ export const TripHeader = ({ trip, placesCount }: TripHeaderProps) => {
         className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
       >
         <ArrowLeft className="h-4 w-4" />
-        Trips
+        Home
       </Link>
 
       <div className="flex items-start justify-between">

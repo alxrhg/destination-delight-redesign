@@ -1,16 +1,16 @@
-import { Search, User, Menu } from 'lucide-react';
-import { useState } from 'react';
+import { Search, User, Menu, Map } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 export function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Track scroll
-  if (typeof window !== 'undefined') {
-    window.addEventListener('scroll', () => {
-      setIsScrolled(window.scrollY > 50);
-    });
-  }
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <header className={cn(
@@ -19,22 +19,23 @@ export function Header() {
     )}>
       <div className="max-w-7xl mx-auto px-6 lg:px-8 h-20 flex items-center justify-between">
         {/* Logo */}
-        <a href="/" className="flex items-center">
+        <Link to="/" className="flex items-center">
           <span className="text-xl font-light tracking-[0.2em] uppercase text-gray-900">
             Urban Manual
           </span>
-        </a>
+        </Link>
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-10">
-          <a href="#" className="text-sm tracking-wide text-gray-600 hover:text-gray-900 transition-colors">
+          <Link to="/" className="text-sm tracking-wide text-gray-600 hover:text-gray-900 transition-colors">
             Destinations
-          </a>
+          </Link>
+          <Link to="/trip" className="text-sm tracking-wide text-gray-600 hover:text-gray-900 transition-colors flex items-center gap-1.5">
+            <Map className="h-4 w-4" />
+            Trip Planner
+          </Link>
           <a href="#" className="text-sm tracking-wide text-gray-600 hover:text-gray-900 transition-colors">
             Collections
-          </a>
-          <a href="#" className="text-sm tracking-wide text-gray-600 hover:text-gray-900 transition-colors">
-            Stories
           </a>
           <a href="#" className="text-sm tracking-wide text-gray-600 hover:text-gray-900 transition-colors">
             About

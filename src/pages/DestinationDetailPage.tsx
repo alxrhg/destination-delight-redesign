@@ -22,7 +22,8 @@ import {
   Calendar,
   Leaf,
   Award,
-  Key
+  Key,
+  Plus
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -217,6 +218,10 @@ export default function DestinationDetailPage() {
 
               {/* Action Buttons */}
               <div className="flex items-center gap-3 mb-8">
+                <Link to="/trip" className="h-10 px-4 rounded-lg bg-white text-gray-900 font-medium flex items-center gap-2 hover:bg-gray-100 transition-colors">
+                  <Plus className="h-4 w-4" />
+                  <span className="text-sm">Add to Trip</span>
+                </Link>
                 <button onClick={handleSave} className={cn(
                   "h-10 px-4 rounded-lg border flex items-center gap-2 transition-colors",
                   isSaved ? "bg-red-500/10 border-red-500/30 text-red-400" : "border-white/10 text-gray-300 hover:bg-white/5"
