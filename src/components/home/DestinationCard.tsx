@@ -1,5 +1,5 @@
+import { Link } from 'react-router-dom';
 import { Destination } from '@/types/destination';
-import { cn } from '@/lib/utils';
 
 interface DestinationCardProps {
   destination: Destination;
@@ -8,8 +8,9 @@ interface DestinationCardProps {
 
 export function DestinationCard({ destination, index }: DestinationCardProps) {
   return (
-    <article 
-      className="group cursor-pointer animate-fade-up"
+    <Link 
+      to={`/destination/${destination.id}`}
+      className="group block animate-fade-up"
       style={{ animationDelay: `${0.1 + index * 0.05}s` }}
     >
       {/* Image */}
@@ -32,6 +33,6 @@ export function DestinationCard({ destination, index }: DestinationCardProps) {
           {destination.category} in {destination.city}
         </p>
       </div>
-    </article>
+    </Link>
   );
 }
