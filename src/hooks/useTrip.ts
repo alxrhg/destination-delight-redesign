@@ -29,11 +29,18 @@ export interface ItineraryItem {
   notes: string | null;
 }
 
+const isValidUUID = (id: string) => {
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  return uuidRegex.test(id);
+};
+
 export const useTrip = (tripId: string | undefined) => {
+  const isValid = tripId && isValidUUID(tripId);
+  
   return useQuery({
     queryKey: ["trip", tripId],
     queryFn: async () => {
-      if (!tripId) throw new Error("Trip ID is required");
+      if (!tripId || !isValid) throw new Error("Invalid Trip ID");
       
       const { data, error } = await supabase
         .from("trips")
@@ -44,15 +51,17 @@ export const useTrip = (tripId: string | undefined) => {
       if (error) throw error;
       return data as Trip;
     },
-    enabled: !!tripId,
+    enabled: !!isValid,
   });
 };
 
 export const useItineraryItems = (tripId: string | undefined) => {
+  const isValid = tripId && isValidUUID(tripId);
+  
   return useQuery({
     queryKey: ["itinerary-items", tripId],
     queryFn: async () => {
-      if (!tripId) throw new Error("Trip ID is required");
+      if (!tripId || !isValid) throw new Error("Invalid Trip ID");
       
       const { data, error } = await supabase
         .from("itinerary_items")
@@ -64,7 +73,7 @@ export const useItineraryItems = (tripId: string | undefined) => {
       if (error) throw error;
       return data as ItineraryItem[];
     },
-    enabled: !!tripId,
+    enabled: !!isValid,
   });
 };
 
