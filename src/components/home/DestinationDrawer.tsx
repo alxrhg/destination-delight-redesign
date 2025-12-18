@@ -1,8 +1,8 @@
 import { X, Star, Heart, Share2, Navigation, MapPin, Phone, Globe, ArrowUpRight } from 'lucide-react';
-import { Destination } from '@/types/destination';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
+import { SupabaseDestination } from '@/hooks/useDestinations';
 import {
   Sheet,
   SheetContent,
@@ -11,29 +11,17 @@ import {
 } from '@/components/ui/sheet';
 
 interface DestinationDrawerProps {
-  destination: Destination | null;
+  destination: SupabaseDestination | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
-
-// Extended mock data for drawer display
-const getDestinationDetails = (destination: Destination) => ({
-  description: `Discover unparalleled luxury at ${destination.name}, where exceptional design meets curated experiences. A destination that defines modern elegance.`,
-  rating: destination.rating || 5.0,
-  reviewCount: 10,
-  address: '123 Design District, ' + destination.city,
-  phone: '+1 555-123-4567',
-  website: destination.name.toLowerCase().replace(/[^a-z0-9]/g, '') + '.com',
-  architect: 'Studio Design',
-  style: 'Contemporary',
-});
 
 export function DestinationDrawer({ destination, open, onOpenChange }: DestinationDrawerProps) {
   const [isSaved, setIsSaved] = useState(false);
 
   if (!destination) return null;
 
-  const details = getDestinationDetails(destination);
+  const imageUrl = destination.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80';
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -48,7 +36,9 @@ export function DestinationDrawer({ destination, open, onOpenChange }: Destinati
               <SheetTitle className="text-lg font-medium text-white">
                 {destination.name}
               </SheetTitle>
-              <p className="text-sm text-white/50 mt-0.5">{destination.city}</p>
+              <p className="text-sm text-white/50 mt-0.5">
+                {destination.city}{destination.country ? `, ${destination.country}` : ''}
+              </p>
             </div>
             <button
               onClick={() => onOpenChange(false)}
@@ -62,11 +52,19 @@ export function DestinationDrawer({ destination, open, onOpenChange }: Destinati
         {/* Hero Image */}
         <div className="relative aspect-[16/10] overflow-hidden">
           <img
-            src={destination.image}
+            src={imageUrl}
             alt={destination.name}
             className="w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0D1117] via-transparent to-transparent" />
+          
+          {/* Michelin Stars Badge */}
+          {destination.michelin_stars && destination.michelin_stars > 0 && (
+            <div className="absolute top-4 left-4 px-3 py-1.5 rounded-full bg-red-600 text-white text-xs font-medium flex items-center gap-1">
+              <Star className="h-3 w-3 fill-current" />
+              {destination.michelin_stars} Michelin Star{destination.michelin_stars > 1 ? 's' : ''}
+            </div>
+          )}
         </div>
 
         {/* Content */}
@@ -80,11 +78,17 @@ export function DestinationDrawer({ destination, open, onOpenChange }: Destinati
           </div>
 
           {/* Rating */}
-          <div className="flex items-center gap-2 mb-5">
-            <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-            <span className="text-white font-medium">{details.rating}</span>
-            <span className="text-white/40 text-sm">({details.reviewCount} reviews)</span>
-          </div>
+          {destination.rating && (
+            <div className="flex items-center gap-2 mb-5">
+              <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+              <span className="text-white font-medium">{destination.rating.toFixed(1)}</span>
+              {destination.price_level && (
+                <span className="text-white/40 text-sm ml-2">
+                  {'$'.repeat(destination.price_level)}
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex gap-3 mb-6">
@@ -109,59 +113,85 @@ export function DestinationDrawer({ destination, open, onOpenChange }: Destinati
           </div>
 
           {/* Description */}
-          <p className="text-sm text-white/60 leading-relaxed mb-8">
-            {details.description}
-          </p>
+          {destination.description && (
+            <p className="text-sm text-white/60 leading-relaxed mb-8">
+              {destination.description}
+            </p>
+          )}
 
           {/* Contact Section */}
-          <div className="mb-8">
-            <h3 className="text-[11px] font-medium tracking-wider text-white/30 uppercase mb-4">
-              Contact & Hours
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <MapPin className="h-4 w-4 text-white/40 mt-0.5 flex-shrink-0" />
-                <span className="text-sm text-white/70">{details.address}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Phone className="h-4 w-4 text-white/40 flex-shrink-0" />
-                <span className="text-sm text-white/70">{details.phone}</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Globe className="h-4 w-4 text-white/40 flex-shrink-0" />
-                <a href="#" className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors">
-                  {details.website}
-                </a>
+          {(destination.address || destination.phone_number || destination.website) && (
+            <div className="mb-8">
+              <h3 className="text-[11px] font-medium tracking-wider text-white/30 uppercase mb-4">
+                Contact & Location
+              </h3>
+              <div className="space-y-3">
+                {destination.address && (
+                  <div className="flex items-start gap-3">
+                    <MapPin className="h-4 w-4 text-white/40 mt-0.5 flex-shrink-0" />
+                    <span className="text-sm text-white/70">{destination.address}</span>
+                  </div>
+                )}
+                {destination.phone_number && (
+                  <div className="flex items-center gap-3">
+                    <Phone className="h-4 w-4 text-white/40 flex-shrink-0" />
+                    <a 
+                      href={`tel:${destination.phone_number}`}
+                      className="text-sm text-white/70 hover:text-white transition-colors"
+                    >
+                      {destination.phone_number}
+                    </a>
+                  </div>
+                )}
+                {destination.website && (
+                  <div className="flex items-center gap-3">
+                    <Globe className="h-4 w-4 text-white/40 flex-shrink-0" />
+                    <a 
+                      href={destination.website.startsWith('http') ? destination.website : `https://${destination.website}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+                    >
+                      Visit website
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
+          )}
 
           {/* Design Section */}
-          <div className="mb-8">
-            <h3 className="text-[11px] font-medium tracking-wider text-white/30 uppercase mb-4">
-              Design & Architecture
-            </h3>
-            <div className="space-y-2">
-              <div className="flex items-center gap-3 py-3 border-b border-white/5">
-                <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center text-white/50 text-xs font-medium">
-                  A
-                </div>
-                <div>
-                  <p className="text-[11px] text-white/40 uppercase tracking-wide">Architect</p>
-                  <p className="text-sm text-white/80">{details.architect}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 py-3">
-                <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center text-white/50 text-xs font-medium">
-                  S
-                </div>
-                <div>
-                  <p className="text-[11px] text-white/40 uppercase tracking-wide">Style</p>
-                  <p className="text-sm text-white/80">{details.style}</p>
-                </div>
+          {(destination.architect || destination.architectural_style) && (
+            <div className="mb-8">
+              <h3 className="text-[11px] font-medium tracking-wider text-white/30 uppercase mb-4">
+                Design & Architecture
+              </h3>
+              <div className="space-y-2">
+                {destination.architect && (
+                  <div className="flex items-center gap-3 py-3 border-b border-white/5">
+                    <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center text-white/50 text-xs font-medium">
+                      A
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-white/40 uppercase tracking-wide">Architect</p>
+                      <p className="text-sm text-white/80">{destination.architect}</p>
+                    </div>
+                  </div>
+                )}
+                {destination.architectural_style && (
+                  <div className="flex items-center gap-3 py-3">
+                    <div className="w-9 h-9 rounded-lg bg-white/5 flex items-center justify-center text-white/50 text-xs font-medium">
+                      S
+                    </div>
+                    <div>
+                      <p className="text-[11px] text-white/40 uppercase tracking-wide">Style</p>
+                      <p className="text-sm text-white/80">{destination.architectural_style}</p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
+          )}
 
           {/* Map Preview */}
           <div className="relative aspect-[2/1] rounded-xl overflow-hidden bg-white/5 mb-6">
@@ -178,7 +208,7 @@ export function DestinationDrawer({ destination, open, onOpenChange }: Destinati
 
           {/* View Full Page Link */}
           <Link
-            to={`/destination/${destination.id}`}
+            to={`/destination/${destination.slug}`}
             className="flex items-center justify-center gap-2 w-full py-4 rounded-xl bg-white text-[#0D1117] text-sm font-medium hover:bg-white/90 transition-colors"
           >
             View Full Details

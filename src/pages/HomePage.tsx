@@ -3,18 +3,21 @@ import { Header } from '@/components/home/Header';
 import { HeroSearch } from '@/components/home/HeroSearch';
 import { DestinationGrid } from '@/components/home/DestinationGrid';
 import { DestinationDrawer } from '@/components/home/DestinationDrawer';
-import { mockDestinations, mockCities, mockCategories } from '@/data/mockData';
-import { Destination } from '@/types/destination';
+import { mockCities, mockCategories } from '@/data/mockData';
 import { Helmet } from 'react-helmet-async';
+import { useDestinations, useDestinationsCount, SupabaseDestination } from '@/hooks/useDestinations';
 
 export default function HomePage() {
   const [selectedCity, setSelectedCity] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
-  const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null);
+  const [selectedDestination, setSelectedDestination] = useState<SupabaseDestination | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
+  const { data: destinations = [], isLoading } = useDestinations(20);
+  const { data: totalCount = 0 } = useDestinationsCount();
+
   // Filter destinations based on selection
-  const filteredDestinations = mockDestinations.filter((destination) => {
+  const filteredDestinations = destinations.filter((destination) => {
     const cityMatch = selectedCity === 'all' || 
       destination.city.toLowerCase() === mockCities.find(c => c.id === selectedCity)?.name.toLowerCase();
     const categoryMatch = selectedCategory === 'all' || 
@@ -22,16 +25,29 @@ export default function HomePage() {
     return cityMatch && categoryMatch;
   });
 
-  const handleDestinationClick = (destination: Destination) => {
+  const handleDestinationClick = (destination: SupabaseDestination) => {
     setSelectedDestination(destination);
     setDrawerOpen(true);
   };
+
+  // Map Supabase destinations to the format expected by DestinationGrid
+  const mappedDestinations = (filteredDestinations.length > 0 ? filteredDestinations : destinations).map(d => ({
+    id: d.slug,
+    name: d.name,
+    category: d.category,
+    city: d.city,
+    country: d.country || undefined,
+    image: d.image || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80',
+    rating: d.rating || undefined,
+    // Store original for click handler
+    _original: d,
+  }));
 
   return (
     <>
       <Helmet>
         <title>Urban Manual® | Curated Destinations Worldwide</title>
-        <meta name="description" content="Discover 909+ curated restaurants, hotels, and hidden gems worldwide." />
+        <meta name="description" content={`Discover ${totalCount}+ curated restaurants, hotels, and hidden gems worldwide.`} />
       </Helmet>
 
       <div className="min-h-screen bg-[#F8F6F3]">
@@ -45,15 +61,22 @@ export default function HomePage() {
             selectedCategory={selectedCategory}
             onCityChange={setSelectedCity}
             onCategoryChange={setSelectedCategory}
-            totalDestinations={909}
-            featuredDestination={mockDestinations[0]}
+            totalDestinations={totalCount}
+            featuredDestination={mappedDestinations[0]}
           />
 
-          <DestinationGrid
-            destinations={filteredDestinations.length > 0 ? filteredDestinations : mockDestinations}
-            totalCount={filteredDestinations.length > 0 ? filteredDestinations.length : 909}
-            onDestinationClick={handleDestinationClick}
-          />
+          {isLoading ? (
+            <div className="py-16 text-center text-gray-500">Loading destinations...</div>
+          ) : (
+            <DestinationGrid
+              destinations={mappedDestinations}
+              totalCount={filteredDestinations.length > 0 ? filteredDestinations.length : totalCount}
+              onDestinationClick={(dest) => {
+                const original = (dest as any)._original as SupabaseDestination;
+                handleDestinationClick(original);
+              }}
+            />
+          )}
         </main>
       </div>
 
