@@ -9,7 +9,9 @@ export interface SupabaseDestination {
   country: string | null;
   category: string;
   description: string | null;
+  content: string | null;
   image: string | null;
+  gallery: string[] | null;
   rating: number | null;
   price_level: number | null;
   architect: string | null;
@@ -19,6 +21,11 @@ export interface SupabaseDestination {
   website: string | null;
   michelin_stars: number | null;
   crown: boolean | null;
+  latitude: number | null;
+  longitude: number | null;
+  opening_hours: any | null;
+  vibe_tags: string[] | null;
+  tags: string[] | null;
 }
 
 export function useDestinations(limit = 10) {
@@ -52,6 +59,50 @@ export function useDestinations(limit = 10) {
       if (error) throw error;
       return data as SupabaseDestination[];
     },
+  });
+}
+
+export function useDestination(slug: string | undefined) {
+  return useQuery({
+    queryKey: ['destination', slug],
+    queryFn: async () => {
+      if (!slug) return null;
+      
+      const { data, error } = await supabase
+        .from('destinations')
+        .select(`
+          id,
+          slug,
+          name,
+          city,
+          country,
+          category,
+          description,
+          content,
+          image,
+          gallery,
+          rating,
+          price_level,
+          architect,
+          architectural_style,
+          address,
+          phone_number,
+          website,
+          michelin_stars,
+          crown,
+          latitude,
+          longitude,
+          opening_hours,
+          vibe_tags,
+          tags
+        `)
+        .eq('slug', slug)
+        .single();
+
+      if (error) throw error;
+      return data as SupabaseDestination;
+    },
+    enabled: !!slug,
   });
 }
 
