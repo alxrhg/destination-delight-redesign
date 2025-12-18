@@ -25,7 +25,7 @@ export default function HomePage() {
         <meta name="description" content="Discover 909+ curated restaurants, hotels, and hidden gems worldwide." />
       </Helmet>
 
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-[#F8F6F3]">
         <Header />
         
         <main>
