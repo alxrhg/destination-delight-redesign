@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
 import { format, addDays } from "date-fns";
 import { Plus, Sparkles } from "lucide-react";
 import { Helmet } from "react-helmet-async";
@@ -9,66 +8,102 @@ import { TripMap } from "@/components/trip/TripMap";
 import { DayTabs } from "@/components/trip/DayTabs";
 import { ItineraryCard } from "@/components/trip/ItineraryCard";
 import { TripSidebar } from "@/components/trip/TripSidebar";
-import { useTrip, useItineraryItems, useCityDestinations } from "@/hooks/useTrip";
 
-const isValidUUID = (id: string) =>
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+// Sample trip data for demo
+const sampleTrip = {
+  id: "demo-trip",
+  title: "Tokyo Adventure",
+  destination: "Tokyo",
+  start_date: new Date().toISOString(),
+  end_date: addDays(new Date(), 4).toISOString(),
+  description: "Exploring the best of Tokyo's architecture and cuisine",
+  is_public: true,
+  status: "planning",
+  cover_image: null,
+  user_id: "demo-user",
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString(),
+};
+
+const sampleItineraryItems = [
+  {
+    id: "1",
+    trip_id: "demo-trip",
+    day: 1,
+    order_index: 0,
+    title: "Flight to Tokyo",
+    description: "Depart from LAX",
+    time: "08:00",
+    destination_slug: null,
+    is_completed: false,
+    notes: "Terminal 5, Gate 42",
+  },
+  {
+    id: "2",
+    trip_id: "demo-trip",
+    day: 1,
+    order_index: 1,
+    title: "Check-in at Park Hyatt Tokyo",
+    description: "Shinjuku, Tokyo",
+    time: "15:00",
+    destination_slug: "park-hyatt-tokyo",
+    is_completed: false,
+    notes: null,
+  },
+  {
+    id: "3",
+    trip_id: "demo-trip",
+    day: 1,
+    order_index: 2,
+    title: "Dinner at Sukiyabashi Jiro",
+    description: "Omakase experience",
+    time: "19:00",
+    destination_slug: "sukiyabashi-jiro",
+    is_completed: false,
+    notes: "Reservation confirmed",
+  },
+  {
+    id: "4",
+    trip_id: "demo-trip",
+    day: 2,
+    order_index: 0,
+    title: "Morning at Tsukiji Outer Market",
+    description: "Fresh sushi breakfast",
+    time: "07:00",
+    destination_slug: null,
+    is_completed: false,
+    notes: null,
+  },
+  {
+    id: "5",
+    trip_id: "demo-trip",
+    day: 2,
+    order_index: 1,
+    title: "TeamLab Borderless",
+    description: "Digital art museum",
+    time: "11:00",
+    destination_slug: null,
+    is_completed: false,
+    notes: "Book tickets online",
+  },
+];
+
+const sampleSuggestedPlaces = [
+  { id: 1, slug: "aman-tokyo", name: "Aman Tokyo", city: "Tokyo", category: "hotel", image: null, rating: 4.9 },
+  { id: 2, slug: "narisawa", name: "Narisawa", city: "Tokyo", category: "dining", image: null, rating: 4.8 },
+  { id: 3, slug: "nezu-museum", name: "Nezu Museum", city: "Tokyo", category: "attraction", image: null, rating: 4.7 },
+];
 
 const TripPage = () => {
-  const { tripId } = useParams<{ tripId: string }>();
   const [selectedDay, setSelectedDay] = useState(1);
 
-  const isValid = tripId && !tripId.startsWith(":") && isValidUUID(tripId);
-
-  // All hooks must be called unconditionally (before any returns)
-  const { data: trip, isLoading: tripLoading, error: tripError } = useTrip(isValid ? tripId : undefined);
-  const { data: itineraryItems = [] } = useItineraryItems(isValid ? tripId : undefined);
-  const { data: suggestedPlaces = [] } = useCityDestinations(trip?.destination ?? null);
-
-  // Early returns AFTER hooks
-  if (!isValid) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center space-y-4 max-w-md">
-          <h1 className="text-2xl font-semibold">Trip not found</h1>
-          <p className="text-muted-foreground">
-            This page needs a real Trip ID in the URL (a UUID). You're currently on <code className="px-1 py-0.5 rounded bg-muted">/trip/:tripId</code>.
-          </p>
-          <div className="flex items-center justify-center gap-2">
-            <Button onClick={() => (window.location.href = "/")}>Go Home</Button>
-            <Button variant="outline" onClick={() => window.history.back()}>
-              Go Back
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (tripLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading trip...</div>
-      </div>
-    );
-  }
-
-  if (tripError || !trip) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center space-y-4">
-          <p className="text-muted-foreground">Trip not found</p>
-          <Button variant="outline" onClick={() => window.history.back()}>
-            Go Back
-          </Button>
-        </div>
-      </div>
-    );
-  }
+  const trip = sampleTrip;
+  const itineraryItems = sampleItineraryItems;
+  const suggestedPlaces = sampleSuggestedPlaces;
 
   const filteredItems = itineraryItems.filter(item => item.day === selectedDay);
-  const startDate = trip.start_date || new Date().toISOString();
-  const endDate = trip.end_date || addDays(new Date(), 2).toISOString();
+  const startDate = trip.start_date;
+  const endDate = trip.end_date;
   const currentDayDate = addDays(new Date(startDate), selectedDay - 1);
 
   return (
@@ -90,14 +125,12 @@ const TripPage = () => {
               <TripHeader trip={trip} placesCount={itineraryItems.length} />
 
               {/* Day Tabs */}
-              {trip.start_date && trip.end_date && (
-                <DayTabs
-                  startDate={startDate}
-                  endDate={endDate}
-                  selectedDay={selectedDay}
-                  onSelectDay={setSelectedDay}
-                />
-              )}
+              <DayTabs
+                startDate={startDate}
+                endDate={endDate}
+                selectedDay={selectedDay}
+                onSelectDay={setSelectedDay}
+              />
 
               {/* Day Header */}
               <div className="flex items-center justify-between">
