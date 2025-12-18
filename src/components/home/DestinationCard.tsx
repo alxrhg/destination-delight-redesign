@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { Star, Heart, ArrowUpRight } from 'lucide-react';
 import { Destination } from '@/types/destination';
 import { useState } from 'react';
@@ -8,9 +7,10 @@ interface DestinationCardProps {
   destination: Destination;
   index: number;
   variant?: 'default' | 'featured';
+  onClick?: (destination: Destination) => void;
 }
 
-export function DestinationCard({ destination, index, variant = 'default' }: DestinationCardProps) {
+export function DestinationCard({ destination, index, variant = 'default', onClick }: DestinationCardProps) {
   const [isSaved, setIsSaved] = useState(false);
 
   const handleSave = (e: React.MouseEvent) => {
@@ -19,11 +19,15 @@ export function DestinationCard({ destination, index, variant = 'default' }: Des
     setIsSaved(!isSaved);
   };
 
+  const handleClick = () => {
+    onClick?.(destination);
+  };
+
   if (variant === 'featured') {
     return (
-      <Link 
-        to={`/destination/${destination.id}`}
-        className="group block animate-fade-up"
+      <div 
+        onClick={handleClick}
+        className="group block animate-fade-up cursor-pointer"
         style={{ animationDelay: `${0.1 + index * 0.05}s` }}
       >
         <div className="relative aspect-[16/10] rounded-3xl overflow-hidden bg-gray-100">
@@ -73,14 +77,14 @@ export function DestinationCard({ destination, index, variant = 'default' }: Des
             <ArrowUpRight className="h-5 w-5 text-gray-900" />
           </div>
         </div>
-      </Link>
+      </div>
     );
   }
 
   return (
-    <Link 
-      to={`/destination/${destination.id}`}
-      className="group block animate-fade-up"
+    <div 
+      onClick={handleClick}
+      className="group block animate-fade-up cursor-pointer"
       style={{ animationDelay: `${0.1 + index * 0.03}s` }}
     >
       {/* Image Container */}
@@ -120,6 +124,6 @@ export function DestinationCard({ destination, index, variant = 'default' }: Des
           {destination.name}
         </h3>
       </div>
-    </Link>
+    </div>
   );
 }
