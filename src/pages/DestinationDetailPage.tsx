@@ -20,13 +20,6 @@ import { mockDestinationDetail } from '@/data/destinationDetail';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { Helmet } from 'react-helmet-async';
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 
 export default function DestinationDetailPage() {
   const navigate = useNavigate();
@@ -250,270 +243,275 @@ export default function DestinationDetailPage() {
         </div>
       </div>
 
-      {/* Desktop Layout - Editorial Style */}
-      <div className="hidden lg:block min-h-screen bg-[#FAFAF8]">
-        {/* Minimal Top Bar */}
-        <header className="fixed top-0 left-0 right-0 z-50 bg-[#FAFAF8]/95 backdrop-blur-sm">
-          <div className="max-w-6xl mx-auto px-8 h-14 flex items-center justify-between">
+      {/* Desktop Layout */}
+      <div className="hidden lg:block min-h-screen bg-[#F8F6F3]">
+        {/* Top Navigation */}
+        <header className="fixed top-0 left-0 right-0 z-50 bg-[#F8F6F3]/80 backdrop-blur-md border-b border-gray-200/50">
+          <div className="max-w-7xl mx-auto px-8 h-16 flex items-center justify-between">
             <button
               onClick={() => navigate('/')}
-              className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
             >
-              ← Back to explore
+              <ChevronLeft className="h-5 w-5" />
+              <span className="font-medium">Back</span>
             </button>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               <button
                 onClick={handleShare}
-                className="text-sm text-gray-500 hover:text-gray-900 transition-colors"
+                className="h-10 px-4 rounded-full bg-white border border-gray-200 flex items-center gap-2 text-gray-700 hover:bg-gray-50 transition-colors"
               >
-                Share
+                <Share2 className="h-4 w-4" />
+                <span className="text-sm font-medium">Share</span>
               </button>
               <button
                 onClick={handleSave}
                 className={cn(
-                  "text-sm transition-colors",
-                  isSaved ? "text-red-500" : "text-gray-500 hover:text-gray-900"
+                  "h-10 px-4 rounded-full border flex items-center gap-2 transition-colors",
+                  isSaved 
+                    ? "bg-red-50 border-red-200 text-red-600" 
+                    : "bg-white border-gray-200 text-gray-700 hover:bg-gray-50"
                 )}
               >
-                {isSaved ? '♥ Saved' : '♡ Save'}
+                <Heart className={cn("h-4 w-4", isSaved && "fill-current")} />
+                <span className="text-sm font-medium">{isSaved ? 'Saved' : 'Save'}</span>
               </button>
             </div>
           </div>
         </header>
 
-        {/* Hero Section */}
-        <section className="pt-14">
-          <div className="relative h-[50vh] min-h-[400px] max-h-[500px]">
-            <img
-              src={allImages[activeImage]}
-              alt={destination.name}
-              className="w-full h-full object-cover"
-            />
-            {/* Image Navigation */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-2">
-              {allImages.slice(0, 5).map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveImage(idx)}
-                  className={cn(
-                    "w-2 h-2 rounded-full transition-all",
-                    activeImage === idx ? "bg-white w-6" : "bg-white/50 hover:bg-white/80"
-                  )}
-                />
-              ))}
-              {allImages.length > 5 && (
-                <span className="text-white/70 text-xs ml-2">+{allImages.length - 5}</span>
-              )}
-            </div>
-            {/* Arrow Navigation */}
-            <button
-              onClick={prevImage}
-              className="absolute left-6 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-800 opacity-0 hover:opacity-100 transition-opacity shadow-md"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-            <button
-              onClick={nextImage}
-              className="absolute right-6 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white/90 flex items-center justify-center text-gray-800 opacity-0 hover:opacity-100 transition-opacity shadow-md"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
-        </section>
-
-        {/* Editorial Content */}
-        <section className="max-w-6xl mx-auto px-8 py-16">
-          {/* Header Row */}
-          <div className="grid grid-cols-12 gap-12 mb-16">
-            {/* Left: Title Area */}
-            <div className="col-span-8">
-              <p className="text-sm font-medium text-gray-400 uppercase tracking-widest mb-3">
-                {destination.category}
-              </p>
-              <h1 className="text-5xl font-serif font-normal text-gray-900 mb-4 leading-tight">
-                {destination.name}
-              </h1>
-              <p className="text-xl text-gray-600 leading-relaxed">
-                {destination.tagline}
-              </p>
-            </div>
-            {/* Right: Quick Facts */}
-            <div className="col-span-4 flex flex-col justify-center">
-              <div className="space-y-4 border-l border-gray-200 pl-8">
-                <div className="flex items-center gap-3">
-                  <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
-                  <span className="text-2xl font-semibold text-gray-900">{destination.rating}</span>
-                  <span className="text-gray-400">({destination.reviews.length} reviews)</span>
-                </div>
-                <div className="flex items-center gap-3 text-gray-600">
-                  <MapPin className="h-5 w-5 text-gray-400" />
-                  <span>{destination.city}, {destination.country}</span>
-                </div>
-                <div className="text-gray-600">
-                  <span className="text-lg">{'€'.repeat(destination.priceLevel)}</span>
-                  <span className="text-gray-300">{'€'.repeat(4 - destination.priceLevel)}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Content Grid */}
-          <div className="grid grid-cols-12 gap-12">
-            {/* Main Content */}
-            <div className="col-span-8">
-              {/* Description */}
-              <div className="prose prose-lg max-w-none mb-12">
-                <p className="text-gray-700 leading-relaxed">
-                  {destination.description}
-                </p>
-              </div>
-
-              {/* Badges */}
-              <div className="flex flex-wrap gap-2 mb-12 pb-12 border-b border-gray-200">
-                {destination.badges.map((badge, idx) => (
-                  <span
-                    key={idx}
-                    className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm bg-gray-100 text-gray-700"
+        {/* Main Content */}
+        <main className="pt-16">
+          <div className="max-w-7xl mx-auto px-8 py-10">
+            <div className="grid grid-cols-12 gap-12">
+              {/* Left Column - Gallery */}
+              <div className="col-span-7">
+                {/* Main Image */}
+                <div className="relative aspect-[4/3] rounded-3xl overflow-hidden mb-4 group">
+                  <img
+                    src={allImages[activeImage]}
+                    alt={destination.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  {/* Navigation Arrows */}
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-white"
                   >
-                    <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-                    {badge.label}
-                  </span>
-                ))}
-              </div>
+                    <ChevronLeft className="h-6 w-6" />
+                  </button>
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center text-gray-800 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-white"
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </button>
+                  {/* Image Counter */}
+                  <div className="absolute bottom-4 right-4 px-4 py-2 rounded-full bg-black/60 backdrop-blur-sm text-white text-sm font-medium">
+                    {activeImage + 1} / {allImages.length}
+                  </div>
+                </div>
 
-              {/* Reviews */}
-              <div className="mb-12">
-                <h2 className="text-2xl font-serif text-gray-900 mb-6">What guests are saying</h2>
-                <div className="space-y-6">
-                  {destination.reviews.slice(0, 3).map((review) => (
-                    <div key={review.id} className="pb-6 border-b border-gray-100 last:border-0">
-                      <div className="flex items-center gap-4 mb-3">
-                        <img src={review.avatar} alt={review.author} className="w-10 h-10 rounded-full object-cover" />
-                        <div>
-                          <p className="font-medium text-gray-900">{review.author}</p>
-                          <div className="flex items-center gap-2">
-                            <div className="flex items-center gap-0.5">
+                {/* Thumbnail Grid */}
+                <div className="grid grid-cols-4 gap-3">
+                  {allImages.slice(0, 4).map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setActiveImage(idx)}
+                      className={cn(
+                        "relative aspect-square rounded-xl overflow-hidden transition-all",
+                        activeImage === idx ? "ring-2 ring-gray-900 ring-offset-2" : "opacity-70 hover:opacity-100"
+                      )}
+                    >
+                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      {idx === 3 && allImages.length > 4 && (
+                        <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-medium">
+                          +{allImages.length - 4}
+                        </div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Reviews Section */}
+                <div className="mt-12">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-semibold text-gray-900">Reviews</h2>
+                    <button className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                      See all {destination.reviews.length} reviews
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {destination.reviews.slice(0, 4).map((review) => (
+                      <div key={review.id} className="p-5 bg-white rounded-2xl border border-gray-100">
+                        <div className="flex items-center gap-3 mb-3">
+                          <img src={review.avatar} alt={review.author} className="w-10 h-10 rounded-full object-cover" />
+                          <div>
+                            <p className="font-medium text-gray-900">{review.author}</p>
+                            <div className="flex items-center gap-1">
                               {[...Array(5)].map((_, i) => (
-                                <Star key={i} className={cn("h-3 w-3", i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-200")} />
+                                <Star key={i} className={cn("h-3.5 w-3.5", i < review.rating ? "fill-yellow-400 text-yellow-400" : "text-gray-200")} />
                               ))}
                             </div>
-                            <span className="text-sm text-gray-400">{review.date}</span>
+                          </div>
+                        </div>
+                        <p className="text-gray-600 line-clamp-3">{review.text}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Map Section - Desktop */}
+                <div className="mt-12">
+                  <div className="flex items-center justify-between mb-6">
+                    <h2 className="text-2xl font-semibold text-gray-900">Location</h2>
+                    <a
+                      href={directionsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors"
+                    >
+                      <Navigation className="h-4 w-4" />
+                      Get Directions
+                    </a>
+                  </div>
+                  <a
+                    href={directionsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block relative rounded-2xl overflow-hidden border border-gray-100 group"
+                  >
+                    <div className="aspect-[2/1] bg-gray-100 relative">
+                      <iframe
+                        src={osmStaticUrl}
+                        className="w-full h-full border-0"
+                        title="Location map"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 pointer-events-none group-hover:bg-black/5 transition-colors" />
+                    </div>
+                    <div className="absolute bottom-4 left-4 px-4 py-3 rounded-xl bg-white/95 backdrop-blur-sm shadow-sm">
+                      <p className="text-xs text-gray-500 mb-0.5">Address</p>
+                      <p className="font-medium text-gray-900">{destination.contact.address}</p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+
+              {/* Right Column - Details */}
+              <div className="col-span-5">
+                <div className="sticky top-24">
+                  {/* Category & Rating */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+                      {destination.category}
+                    </span>
+                    <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-white border border-gray-200">
+                      <Star className="h-3.5 w-3.5 fill-yellow-400 text-yellow-400" />
+                      <span className="text-sm font-semibold text-gray-900">{destination.rating}</span>
+                    </div>
+                    <span className="text-sm text-gray-500">{'€'.repeat(destination.priceLevel)}</span>
+                  </div>
+
+                  {/* Title */}
+                  <h1 className="text-4xl font-bold text-gray-900 mb-2 leading-tight">
+                    {destination.name}
+                  </h1>
+
+                  {/* Location */}
+                  <p className="flex items-center gap-1.5 text-gray-500 mb-6">
+                    <MapPin className="h-4 w-4" />
+                    {destination.city}, {destination.country}
+                  </p>
+
+                  {/* Badges */}
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {destination.badges.map((badge, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium bg-white border border-gray-200 text-gray-700"
+                      >
+                        <Sparkles className="h-3 w-3" />
+                        {badge.label}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Description */}
+                  <div className="mb-8">
+                    <p className="text-lg text-gray-700 leading-relaxed">
+                      <span className="font-semibold text-gray-900">{destination.tagline}</span>{' '}
+                      {destination.description}
+                    </p>
+                  </div>
+
+                  {/* Book Button */}
+                  <Button
+                    size="lg"
+                    className="w-full h-14 rounded-xl bg-gray-900 hover:bg-gray-800 text-white font-medium text-base mb-6"
+                  >
+                    <ExternalLink className="h-5 w-5 mr-2" />
+                    Book Now
+                  </Button>
+
+                  {/* Info Cards */}
+                  <div className="space-y-3">
+                    <div className="p-4 bg-white rounded-xl border border-gray-100">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                          <MapPin className="h-5 w-5 text-gray-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 mb-0.5">Address</p>
+                          <p className="text-sm text-gray-500">{destination.contact.address}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-white rounded-xl border border-gray-100">
+                      <div className="flex items-start gap-3">
+                        <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                          <Clock className="h-5 w-5 text-gray-600" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 mb-0.5">Hours</p>
+                          {destination.hours.slice(0, 2).map((h, i) => (
+                            <p key={i} className="text-sm text-gray-500">{h.day}: {h.time}</p>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-4 bg-white rounded-xl border border-gray-100">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                            <Phone className="h-5 w-5 text-gray-600" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-medium text-gray-900 mb-0.5">Call</p>
+                            <p className="text-sm text-gray-500 truncate">{destination.contact.phone}</p>
                           </div>
                         </div>
                       </div>
-                      <p className="text-gray-600 leading-relaxed">{review.text}</p>
+
+                      <div className="p-4 bg-white rounded-xl border border-gray-100">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center shrink-0">
+                            <Globe className="h-5 w-5 text-gray-600" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-medium text-gray-900 mb-0.5">Website</p>
+                            <p className="text-sm text-gray-500 truncate">Visit site</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  ))}
+                  </div>
                 </div>
-                <button className="mt-4 text-sm font-medium text-gray-900 hover:text-gray-600 transition-colors">
-                  See all {destination.reviews.length} reviews →
-                </button>
               </div>
             </div>
-
-            {/* Sidebar */}
-            <aside className="col-span-4">
-              <div className="sticky top-20 space-y-6">
-                {/* Booking Card */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                  <Button
-                    size="lg"
-                    className="w-full h-12 rounded-xl bg-gray-900 hover:bg-gray-800 text-white font-medium mb-3"
-                  >
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    Book Now
-                  </Button>
-                  <p className="text-center text-sm text-gray-400">Free cancellation available</p>
-                </div>
-
-                {/* Info Card */}
-                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-5">
-                  {/* Hours */}
-                  <div>
-                    <div className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
-                      <Clock className="h-4 w-4 text-gray-400" />
-                      Hours
-                    </div>
-                    <div className="space-y-1 text-sm">
-                      {destination.hours.map((h, i) => (
-                        <div key={i} className="flex justify-between">
-                          <span className="text-gray-500">{h.day}</span>
-                          <span className="text-gray-900">{h.time}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="h-px bg-gray-100" />
-
-                  {/* Contact */}
-                  <div>
-                    <div className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
-                      <Phone className="h-4 w-4 text-gray-400" />
-                      Contact
-                    </div>
-                    <p className="text-sm text-gray-600 mb-1">{destination.contact.phone}</p>
-                    <a 
-                      href={destination.contact.website} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-sm text-gray-600 hover:text-gray-900 flex items-center gap-1"
-                    >
-                      <Globe className="h-3.5 w-3.5" />
-                      Visit website
-                    </a>
-                  </div>
-
-                  <div className="h-px bg-gray-100" />
-
-                  {/* Location */}
-                  <div>
-                    <div className="flex items-center gap-2 text-sm font-medium text-gray-900 mb-2">
-                      <MapPin className="h-4 w-4 text-gray-400" />
-                      Location
-                    </div>
-                    <p className="text-sm text-gray-600 mb-3">{destination.contact.address}</p>
-                    
-                    {/* Map Panel Trigger */}
-                    <Sheet>
-                      <SheetTrigger asChild>
-                        <button className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-gray-100 text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors">
-                          <Navigation className="h-4 w-4" />
-                          View on map
-                        </button>
-                      </SheetTrigger>
-                      <SheetContent side="right" className="w-[500px] sm:w-[600px] p-0">
-                        <SheetHeader className="p-6 border-b border-gray-100">
-                          <SheetTitle className="text-left">{destination.name}</SheetTitle>
-                          <p className="text-sm text-gray-500 text-left">{destination.contact.address}</p>
-                        </SheetHeader>
-                        <div className="h-[calc(100vh-180px)]">
-                          <iframe
-                            src={osmStaticUrl}
-                            className="w-full h-full border-0"
-                            title="Location map"
-                            loading="lazy"
-                          />
-                        </div>
-                        <div className="p-6 border-t border-gray-100">
-                          <a
-                            href={directionsUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gray-900 text-white font-medium hover:bg-gray-800 transition-colors"
-                          >
-                            <Navigation className="h-4 w-4" />
-                            Get Directions in Google Maps
-                          </a>
-                        </div>
-                      </SheetContent>
-                    </Sheet>
-                  </div>
-                </div>
-              </div>
-            </aside>
           </div>
-        </section>
+        </main>
       </div>
     </>
   );
