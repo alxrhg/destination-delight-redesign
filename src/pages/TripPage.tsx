@@ -219,20 +219,24 @@ const TripPage = () => {
 
               {/* Day Pills */}
               <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-                {Array.from({ length: totalDays }, (_, i) => i + 1).map((day) => (
-                  <button
-                    key={day}
-                    onClick={() => setSelectedDay(day)}
-                    className={cn(
-                      "flex-shrink-0 w-10 h-10 rounded-full text-sm font-medium transition-all",
-                      selectedDay === day
-                        ? "bg-foreground text-background"
-                        : "bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground"
-                    )}
-                  >
-                    {day}
-                  </button>
-                ))}
+                {Array.from({ length: totalDays }, (_, i) => {
+                  const day = i + 1;
+                  const dayDate = addDays(startDate, i);
+                  return (
+                    <button
+                      key={day}
+                      onClick={() => setSelectedDay(day)}
+                      className={cn(
+                        "flex-shrink-0 px-3 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap",
+                        selectedDay === day
+                          ? "bg-foreground text-background"
+                          : "bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground"
+                      )}
+                    >
+                      {format(dayDate, "MMM d")}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
