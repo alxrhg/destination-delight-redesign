@@ -14,7 +14,29 @@ import { useTrip, useItineraryItems, useCityDestinations } from "@/hooks/useTrip
 const TripPage = () => {
   const { tripId } = useParams<{ tripId: string }>();
   const [selectedDay, setSelectedDay] = useState(1);
-  
+
+  const isValidUUID = (id: string) =>
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
+  if (!tripId || tripId.startsWith(":" ) || !isValidUUID(tripId)) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center space-y-4 max-w-md">
+          <h1 className="text-2xl font-semibold">Trip not found</h1>
+          <p className="text-muted-foreground">
+            This page needs a real Trip ID in the URL (a UUID). You’re currently on <code className="px-1 py-0.5 rounded bg-muted">/trip/:tripId</code>.
+          </p>
+          <div className="flex items-center justify-center gap-2">
+            <Button onClick={() => (window.location.href = "/")}>Go Home</Button>
+            <Button variant="outline" onClick={() => window.history.back()}>
+              Go Back
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const { data: trip, isLoading: tripLoading, error: tripError } = useTrip(tripId);
   const { data: itineraryItems = [] } = useItineraryItems(tripId);
   const { data: suggestedPlaces = [] } = useCityDestinations(trip?.destination ?? null);
