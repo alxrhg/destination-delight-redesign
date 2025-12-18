@@ -1,4 +1,5 @@
 import { AlertTriangle, GripVertical, Plus, Sparkles } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -38,9 +39,10 @@ export const TripSidebar = ({ suggestedPlaces, city, hasConflict }: TripSidebarP
         </div>
         <div className="divide-y divide-border">
           {suggestedPlaces.slice(0, 4).map((place) => (
-            <div 
+            <Link 
               key={place.id}
-              className="flex items-center gap-3 p-3 hover:bg-accent/50 transition-colors cursor-grab"
+              to={`/destination/${place.slug}`}
+              className="flex items-center gap-3 p-3 hover:bg-accent/50 transition-colors cursor-pointer"
             >
               <GripVertical className="h-4 w-4 text-muted-foreground flex-shrink-0" />
               <div className="w-12 h-12 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
@@ -58,7 +60,7 @@ export const TripSidebar = ({ suggestedPlaces, city, hasConflict }: TripSidebarP
                 <p className="font-medium text-sm truncate">{place.name}</p>
                 <p className="text-xs text-muted-foreground">{place.category}</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
