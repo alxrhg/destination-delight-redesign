@@ -2,12 +2,16 @@ import { useState } from 'react';
 import { Header } from '@/components/home/Header';
 import { HeroSearch } from '@/components/home/HeroSearch';
 import { DestinationGrid } from '@/components/home/DestinationGrid';
+import { DestinationDrawer } from '@/components/home/DestinationDrawer';
 import { mockDestinations, mockCities, mockCategories } from '@/data/mockData';
+import { Destination } from '@/types/destination';
 import { Helmet } from 'react-helmet-async';
 
 export default function HomePage() {
   const [selectedCity, setSelectedCity] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedDestination, setSelectedDestination] = useState<Destination | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   // Filter destinations based on selection
   const filteredDestinations = mockDestinations.filter((destination) => {
@@ -17,6 +21,11 @@ export default function HomePage() {
       destination.category.toLowerCase() === mockCategories.find(c => c.id === selectedCategory)?.name.toLowerCase();
     return cityMatch && categoryMatch;
   });
+
+  const handleDestinationClick = (destination: Destination) => {
+    setSelectedDestination(destination);
+    setDrawerOpen(true);
+  };
 
   return (
     <>
@@ -43,9 +52,16 @@ export default function HomePage() {
           <DestinationGrid
             destinations={filteredDestinations.length > 0 ? filteredDestinations : mockDestinations}
             totalCount={filteredDestinations.length > 0 ? filteredDestinations.length : 909}
+            onDestinationClick={handleDestinationClick}
           />
         </main>
       </div>
+
+      <DestinationDrawer
+        destination={selectedDestination}
+        open={drawerOpen}
+        onOpenChange={setDrawerOpen}
+      />
     </>
   );
 }

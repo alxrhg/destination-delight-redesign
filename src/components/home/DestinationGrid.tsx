@@ -5,9 +5,10 @@ import { DestinationCard } from './DestinationCard';
 interface DestinationGridProps {
   destinations: Destination[];
   totalCount: number;
+  onDestinationClick?: (destination: Destination) => void;
 }
 
-export function DestinationGrid({ destinations, totalCount }: DestinationGridProps) {
+export function DestinationGrid({ destinations, totalCount, onDestinationClick }: DestinationGridProps) {
   // Split destinations for layout variety
   const featured = destinations.slice(0, 2);
   const regular = destinations.slice(2);
@@ -37,6 +38,7 @@ export function DestinationGrid({ destinations, totalCount }: DestinationGridPro
               destination={destination}
               index={index}
               variant="featured"
+              onClick={onDestinationClick}
             />
           ))}
         </div>
@@ -49,6 +51,7 @@ export function DestinationGrid({ destinations, totalCount }: DestinationGridPro
               destination={destination}
               index={index + 2}
               variant="default"
+              onClick={onDestinationClick}
             />
           ))}
         </div>
