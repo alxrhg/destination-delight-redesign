@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { format, addDays } from "date-fns";
-import { ArrowLeft, MapPin, Plus, MoreHorizontal, Clock, Check, GripVertical, ChevronDown } from "lucide-react";
+import { MapPin, Plus, MoreHorizontal, Check, GripVertical, ChevronDown } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Header } from "@/components/home/Header";
 import {
   Collapsible,
   CollapsibleContent,
@@ -69,18 +70,7 @@ const TripPage = () => {
       </Helmet>
 
       <div className="min-h-screen bg-background">
-        {/* Header */}
-        <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border">
-          <div className="max-w-4xl mx-auto px-6 h-14 flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-              <ArrowLeft className="h-4 w-4" />
-              <span className="text-sm">Back</span>
-            </Link>
-            <Button variant="ghost" size="icon" className="text-muted-foreground">
-              <MoreHorizontal className="h-5 w-5" />
-            </Button>
-          </div>
-        </header>
+        <Header />
 
         {/* Content */}
         <main className="max-w-4xl mx-auto px-6 py-8">
