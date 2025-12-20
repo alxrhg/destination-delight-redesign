@@ -1,8 +1,11 @@
+'use client';
+
 import { useState } from 'react';
 import { Header } from '@/components/home/Header';
 import { HeroSearch } from '@/components/home/HeroSearch';
 import { DestinationGrid } from '@/components/home/DestinationGrid';
 import { DestinationDrawer } from '@/components/home/DestinationDrawer';
+import { Footer } from '@/components/home/Footer';
 import { mockCities, mockCategories } from '@/data/mockData';
 import { Helmet } from 'react-helmet-async';
 import { useDestinations, useDestinationsCount, SupabaseDestination } from '@/hooks/useDestinations';
@@ -18,9 +21,9 @@ export default function HomePage() {
 
   // Filter destinations based on selection
   const filteredDestinations = destinations.filter((destination) => {
-    const cityMatch = selectedCity === 'all' || 
+    const cityMatch = selectedCity === 'all' ||
       destination.city.toLowerCase() === mockCities.find(c => c.id === selectedCity)?.name.toLowerCase();
-    const categoryMatch = selectedCategory === 'all' || 
+    const categoryMatch = selectedCategory === 'all' ||
       destination.category.toLowerCase() === mockCategories.find(c => c.id === selectedCategory)?.name.toLowerCase();
     return cityMatch && categoryMatch;
   });
@@ -50,10 +53,14 @@ export default function HomePage() {
         <meta name="description" content={`Discover ${totalCount}+ curated restaurants, hotels, and hidden gems worldwide.`} />
       </Helmet>
 
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-white dark:bg-gray-950">
         <Header />
-        
-        <main>
+
+        <main id="main-content" className="relative dark:text-white" role="main">
+          <h1 className="sr-only">
+            Discover the World's Best Hotels, Restaurants & Travel Destinations - Urban Manual
+          </h1>
+
           <HeroSearch
             cities={mockCities}
             categories={mockCategories}
@@ -66,7 +73,9 @@ export default function HomePage() {
           />
 
           {isLoading ? (
-            <div className="py-16 text-center text-muted-foreground">Loading destinations...</div>
+            <div className="py-16 text-center text-gray-500 dark:text-gray-400">
+              Loading destinations...
+            </div>
           ) : (
             <DestinationGrid
               destinations={mappedDestinations}
@@ -78,6 +87,8 @@ export default function HomePage() {
             />
           )}
         </main>
+
+        <Footer />
       </div>
 
       <DestinationDrawer
