@@ -19,12 +19,12 @@ export function DestinationGrid({ destinations, totalCount, onDestinationClick }
         {/* Section Header */}
         <div className="flex items-end justify-between mb-12">
           <div>
-            <p className="text-sm tracking-[0.3em] uppercase text-gray-400 mb-3">Selected for you</p>
-            <h2 className="text-3xl lg:text-4xl font-light text-gray-900">
+            <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-3">Selected for you</p>
+            <h2 className="text-3xl lg:text-4xl font-light text-foreground">
               Latest additions
             </h2>
           </div>
-          <button className="hidden md:flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors group">
+          <button className="hidden md:flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group">
             View all {totalCount}
             <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
           </button>
@@ -58,7 +58,7 @@ export function DestinationGrid({ destinations, totalCount, onDestinationClick }
 
         {/* Mobile View All */}
         <div className="md:hidden mt-10 text-center">
-          <button className="inline-flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-full text-sm font-medium text-gray-700 hover:border-gray-400 transition-colors">
+          <button className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-full text-sm font-medium text-foreground hover:border-muted-foreground transition-colors">
             View all {totalCount} destinations
             <ArrowRight className="h-4 w-4" />
           </button>

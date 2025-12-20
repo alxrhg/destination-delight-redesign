@@ -32,7 +32,7 @@ export function HeroSearch({
           <div className="max-w-xl">
             {/* Eyebrow */}
             <p 
-              className="text-sm tracking-[0.3em] uppercase text-gray-500 mb-6 animate-fade-up"
+              className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-6 animate-fade-up"
               style={{ animationDelay: '0.1s' }}
             >
               Curated destinations worldwide
@@ -40,7 +40,7 @@ export function HeroSearch({
             
             {/* Main Headline */}
             <h1 
-              className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-gray-900 leading-[1.1] mb-8 animate-fade-up"
+              className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-foreground leading-[1.1] mb-8 animate-fade-up"
               style={{ animationDelay: '0.2s' }}
             >
               Discover places
@@ -50,7 +50,7 @@ export function HeroSearch({
             
             {/* Subtitle */}
             <p 
-              className="text-lg text-gray-500 max-w-md mb-10 animate-fade-up"
+              className="text-lg text-muted-foreground max-w-md mb-10 animate-fade-up"
               style={{ animationDelay: '0.3s' }}
             >
               A carefully selected collection of restaurants, hotels, and cultural experiences.
@@ -61,11 +61,11 @@ export function HeroSearch({
               className="flex flex-col sm:flex-row gap-4 animate-fade-up"
               style={{ animationDelay: '0.4s' }}
             >
-              <button className="inline-flex items-center justify-center gap-3 h-14 px-8 bg-gray-900 hover:bg-gray-800 text-white rounded-full font-medium transition-colors">
+              <button className="inline-flex items-center justify-center gap-3 h-14 px-8 bg-foreground hover:bg-foreground/90 text-background rounded-full font-medium transition-colors">
                 Start exploring
                 <ArrowRight className="h-5 w-5" />
               </button>
-              <button className="inline-flex items-center justify-center gap-3 h-14 px-8 border border-gray-300 hover:border-gray-400 text-gray-700 rounded-full font-medium transition-colors">
+              <button className="inline-flex items-center justify-center gap-3 h-14 px-8 border border-border hover:border-muted-foreground text-foreground rounded-full font-medium transition-colors">
                 View collections
               </button>
             </div>
@@ -85,14 +85,14 @@ export function HeroSearch({
                 className="w-full h-full object-cover"
               />
               {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#F8F6F3] via-[#F8F6F3]/20 to-transparent w-1/3" />
+              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/20 to-transparent w-1/3" />
               
               {/* Featured badge */}
               <div className="absolute bottom-8 left-8 right-8">
-                <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-lg max-w-sm">
-                  <p className="text-xs tracking-wide uppercase text-gray-400 mb-2">Featured</p>
-                  <h3 className="text-lg font-medium text-gray-900 mb-1">{featuredDestination.name}</h3>
-                  <p className="text-sm text-gray-500">{featuredDestination.category} · {featuredDestination.city}</p>
+                <div className="bg-card/95 backdrop-blur-sm rounded-2xl p-6 shadow-elevated max-w-sm border border-border">
+                  <p className="text-xs tracking-wide uppercase text-muted-foreground mb-2">Featured</p>
+                  <h3 className="text-lg font-medium text-foreground mb-1">{featuredDestination.name}</h3>
+                  <p className="text-sm text-muted-foreground">{featuredDestination.category} · {featuredDestination.city}</p>
                 </div>
               </div>
             </div>
@@ -101,12 +101,12 @@ export function HeroSearch({
       </div>
 
       {/* Filter Bar */}
-      <div className="border-t border-gray-200 bg-white/50 backdrop-blur-sm">
+      <div className="border-t border-border bg-card/50 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-5">
           <div className="flex flex-col lg:flex-row lg:items-center gap-6">
             {/* Cities */}
             <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2 lg:pb-0">
-              <span className="text-xs tracking-wide uppercase text-gray-400 shrink-0 mr-2">City</span>
+              <span className="text-xs tracking-wide uppercase text-muted-foreground shrink-0 mr-2">City</span>
               {cities.map((city) => (
                 <button
                   key={city.id}
@@ -114,8 +114,8 @@ export function HeroSearch({
                   className={cn(
                     "shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all",
                     selectedCity === city.id
-                      ? "bg-gray-900 text-white"
-                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      ? "bg-foreground text-background"
+                      : "bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
                   )}
                 >
                   {city.name}
@@ -124,11 +124,11 @@ export function HeroSearch({
             </div>
 
             {/* Divider */}
-            <div className="hidden lg:block w-px h-8 bg-gray-200" />
+            <div className="hidden lg:block w-px h-8 bg-border" />
 
             {/* Categories */}
             <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-              <span className="text-xs tracking-wide uppercase text-gray-400 shrink-0 mr-2">Type</span>
+              <span className="text-xs tracking-wide uppercase text-muted-foreground shrink-0 mr-2">Type</span>
               {categories.slice(0, 6).map((category) => (
                 <button
                   key={category.id}
@@ -136,8 +136,8 @@ export function HeroSearch({
                   className={cn(
                     "shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all",
                     selectedCategory === category.id
-                      ? "bg-gray-900 text-white"
-                      : "text-gray-600 hover:text-gray-900"
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   {category.name}
