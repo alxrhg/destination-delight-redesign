@@ -114,11 +114,61 @@ export default function DestinationDetailPage() {
     ...(destination.tags || []),
   ].filter((v, i, a) => a.indexOf(v) === i); // Remove duplicates
 
+  // Build structured data for SEO
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': destination.category === 'restaurant' ? 'Restaurant' :
+             destination.category === 'hotel' ? 'Hotel' : 'LocalBusiness',
+    name: destination.name,
+    description: tagline || destination.description || `Discover ${destination.name} in ${destination.city}`,
+    image: allImages,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: destination.address,
+      addressLocality: destination.city,
+      addressCountry: destination.country,
+    },
+    ...(hasCoordinates && {
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: lat,
+        longitude: lng,
+      },
+      // GeoCircle for area coverage - geoRadius must be a Number (meters), not string
+      areaServed: {
+        '@type': 'GeoCircle',
+        geoMidpoint: {
+          '@type': 'GeoCoordinates',
+          latitude: lat,
+          longitude: lng,
+        },
+        // Use Number type for geoRadius (in meters) for better data parsing by search engines
+        geoRadius: 5000,
+      },
+    }),
+    ...(destination.phone_number && { telephone: destination.phone_number }),
+    ...(destination.website && { url: destination.website }),
+    ...(destination.rating && {
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: destination.rating,
+        ...(destination.reviews_count && { reviewCount: destination.reviews_count }),
+        bestRating: 5,
+      },
+    }),
+    ...(destination.price_level && {
+      priceRange: '$'.repeat(destination.price_level),
+    }),
+  };
+
   return (
     <>
       <Helmet>
         <title>{destination.name} | Urban Manual</title>
         <meta name="description" content={tagline || `Discover ${destination.name} in ${destination.city}`} />
+        <script type="application/ld+json">
+          {JSON.stringify(structuredData)}
+        </script>
       </Helmet>
 
       <div className="min-h-screen bg-[#0D1117]">
