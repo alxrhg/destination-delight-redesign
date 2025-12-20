@@ -58,16 +58,36 @@ const DESTINATION_FIELDS = `
 // 4 rows × 6 columns (XL breakpoint) = 24 items per page
 const PAGE_SIZE = 24;
 
-export function usePaginatedDestinations(page: number) {
+interface PaginationFilters {
+  city?: string;
+  category?: string;
+}
+
+export function usePaginatedDestinations(page: number, filters?: PaginationFilters) {
+  const cityFilter = filters?.city && filters.city !== 'all' ? filters.city : null;
+  const categoryFilter = filters?.category && filters.category !== 'all' ? filters.category : null;
+
   return useQuery({
-    queryKey: ['destinations-paginated', page],
+    queryKey: ['destinations-paginated', page, cityFilter, categoryFilter],
     queryFn: async () => {
       const from = page * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      const { data, error, count } = await supabase
+      let query = supabase
         .from('destinations')
-        .select(DESTINATION_FIELDS, { count: 'exact' })
+        .select(DESTINATION_FIELDS, { count: 'exact' });
+
+      // Apply city filter (case-insensitive)
+      if (cityFilter) {
+        query = query.ilike('city', cityFilter);
+      }
+
+      // Apply category filter (case-insensitive)
+      if (categoryFilter) {
+        query = query.ilike('category', categoryFilter);
+      }
+
+      const { data, error, count } = await query
         .order('rating', { ascending: false, nullsFirst: false })
         .order('created_at', { ascending: false })
         .range(from, to);
