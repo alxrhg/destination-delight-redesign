@@ -435,6 +435,42 @@ export type Database = {
         }
         Relationships: []
       }
+      brands: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          logo_url: string | null
+          name: string
+          slug: string
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name: string
+          slug: string
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string | null
@@ -835,6 +871,39 @@ export type Database = {
         }
         Relationships: []
       }
+      countries: {
+        Row: {
+          code: string | null
+          created_at: string | null
+          flag_emoji: string | null
+          id: string
+          image_url: string | null
+          name: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          code?: string | null
+          created_at?: string | null
+          flag_emoji?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          code?: string | null
+          created_at?: string | null
+          flag_emoji?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       crowding_data: {
         Row: {
           crowding_level: string | null
@@ -1170,6 +1239,7 @@ export type Database = {
           instagram_updated_at: string | null
           instagram_url: string | null
           intelligence_score: number | null
+          interior_designer: string | null
           interior_designer_id: string | null
           interior_style: string | null
           international_phone_number: string | null
@@ -1366,6 +1436,7 @@ export type Database = {
           instagram_updated_at?: string | null
           instagram_url?: string | null
           intelligence_score?: number | null
+          interior_designer?: string | null
           interior_designer_id?: string | null
           interior_style?: string | null
           international_phone_number?: string | null
@@ -1562,6 +1633,7 @@ export type Database = {
           instagram_updated_at?: string | null
           instagram_url?: string | null
           intelligence_score?: number | null
+          interior_designer?: string | null
           interior_designer_id?: string | null
           interior_style?: string | null
           international_phone_number?: string | null
@@ -2518,6 +2590,42 @@ export type Database = {
           id?: string
           name?: string
           slug?: string
+        }
+        Relationships: []
+      }
+      neighborhoods: {
+        Row: {
+          city: string | null
+          country: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          name: string
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          city?: string | null
+          country?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          slug?: string
+          updated_at?: string | null
         }
         Relationships: []
       }

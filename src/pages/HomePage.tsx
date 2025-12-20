@@ -50,7 +50,7 @@ export default function HomePage() {
         <meta name="description" content={`Discover ${totalCount}+ curated restaurants, hotels, and hidden gems worldwide.`} />
       </Helmet>
 
-      <div className="min-h-screen bg-[#F8F6F3]">
+      <div className="min-h-screen bg-background">
         <Header />
         
         <main>
@@ -66,7 +66,7 @@ export default function HomePage() {
           />
 
           {isLoading ? (
-            <div className="py-16 text-center text-gray-500">Loading destinations...</div>
+            <div className="py-16 text-center text-muted-foreground">Loading destinations...</div>
           ) : (
             <DestinationGrid
               destinations={mappedDestinations}
