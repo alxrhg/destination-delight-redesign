@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState } from 'react';
 import { Header } from '@/components/home/Header';
 import { HeroSearch } from '@/components/home/HeroSearch';
 import { DestinationGrid } from '@/components/home/DestinationGrid';
@@ -8,29 +8,23 @@ import { DestinationDrawer } from '@/components/home/DestinationDrawer';
 import { Footer } from '@/components/home/Footer';
 import { mockCities, mockCategories } from '@/data/mockData';
 import { Helmet } from 'react-helmet-async';
-import { useDestinationsCount, SupabaseDestination } from '@/hooks/useDestinations';
-import { useInfiniteDestinations } from '@/hooks/useInfiniteDestinations';
+import { SupabaseDestination } from '@/hooks/useDestinations';
+import { usePaginatedDestinations } from '@/hooks/usePaginatedDestinations';
 import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 export default function HomePage() {
   const [selectedCity, setSelectedCity] = useState('all');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedDestination, setSelectedDestination] = useState<SupabaseDestination | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const loadMoreRef = useRef<HTMLDivElement>(null);
+  const [currentPage, setCurrentPage] = useState(0);
 
-  const { 
-    data, 
-    isLoading, 
-    isFetchingNextPage, 
-    hasNextPage, 
-    fetchNextPage 
-  } = useInfiniteDestinations();
-  const { data: totalCount = 0 } = useDestinationsCount();
-
-  // Flatten all pages into a single array
-  const destinations = data?.pages.flatMap(page => page.destinations) || [];
+  const { data, isLoading } = usePaginatedDestinations(currentPage);
+  
+  const destinations = data?.destinations || [];
+  const totalCount = data?.totalCount || 0;
+  const totalPages = data?.totalPages || 1;
 
   // Filter destinations based on selection
   const filteredDestinations = destinations.filter((destination) => {
@@ -46,23 +40,10 @@ export default function HomePage() {
     setDrawerOpen(true);
   };
 
-  // Infinite scroll observer
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   // Map Supabase destinations to the format expected by DestinationGrid
   const displayDestinations = filteredDestinations.length > 0 || selectedCity !== 'all' || selectedCategory !== 'all' 
@@ -114,34 +95,72 @@ export default function HomePage() {
             <>
               <DestinationGrid
                 destinations={mappedDestinations}
-                totalCount={selectedCity !== 'all' || selectedCategory !== 'all' ? displayDestinations.length : totalCount}
+                totalCount={totalCount}
                 onDestinationClick={(dest) => {
                   const original = (dest as any)._original as SupabaseDestination;
                   handleDestinationClick(original);
                 }}
               />
 
-              {/* Load More Trigger */}
-              <div ref={loadMoreRef} className="py-8 flex justify-center">
-                {isFetchingNextPage ? (
-                  <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                    <span className="text-sm">Loading more...</span>
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="py-8 px-6 md:px-10">
+                  <div className="max-w-[1800px] mx-auto flex items-center justify-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 0}
+                      className="gap-1"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                      Previous
+                    </Button>
+
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                        let pageNum: number;
+                        if (totalPages <= 7) {
+                          pageNum = i;
+                        } else if (currentPage < 3) {
+                          pageNum = i;
+                        } else if (currentPage > totalPages - 4) {
+                          pageNum = totalPages - 7 + i;
+                        } else {
+                          pageNum = currentPage - 3 + i;
+                        }
+
+                        return (
+                          <Button
+                            key={pageNum}
+                            variant={currentPage === pageNum ? "default" : "ghost"}
+                            size="sm"
+                            onClick={() => handlePageChange(pageNum)}
+                            className="w-9 h-9 p-0"
+                          >
+                            {pageNum + 1}
+                          </Button>
+                        );
+                      })}
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage >= totalPages - 1}
+                      className="gap-1"
+                    >
+                      Next
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
                   </div>
-                ) : hasNextPage ? (
-                  <Button
-                    variant="outline"
-                    onClick={() => fetchNextPage()}
-                    className="text-sm"
-                  >
-                    Load more destinations
-                  </Button>
-                ) : destinations.length > 0 ? (
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    You've seen all {destinations.length} destinations
+                  
+                  <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
+                    Page {currentPage + 1} of {totalPages} • {totalCount} destinations
                   </p>
-                ) : null}
-              </div>
+                </div>
+              )}
             </>
           )}
         </main>
