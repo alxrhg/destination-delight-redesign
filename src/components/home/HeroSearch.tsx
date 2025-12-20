@@ -1,4 +1,6 @@
-import { ArrowRight } from 'lucide-react';
+'use client';
+
+import { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { City, Category, Destination } from '@/types/destination';
 
@@ -13,6 +15,23 @@ interface HeroSearchProps {
   featuredDestination?: Destination;
 }
 
+function capitalizeCity(city: string): string {
+  return city
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
+function capitalizeCategory(category: string): string {
+  return category
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
+// Featured cities to show first
+const FEATURED_CITIES = ['Taipei', 'Tokyo', 'New York', 'London', 'Paris', 'Barcelona'];
+
 export function HeroSearch({
   cities,
   categories,
@@ -20,129 +39,149 @@ export function HeroSearch({
   selectedCategory,
   onCityChange,
   onCategoryChange,
-  featuredDestination,
+  totalDestinations,
 }: HeroSearchProps) {
+  const [showAllCities, setShowAllCities] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Sort cities: featured first, then alphabetically
+  const sortedCities = [...cities].sort((a, b) => {
+    const aFeatured = FEATURED_CITIES.includes(a.name);
+    const bFeatured = FEATURED_CITIES.includes(b.name);
+    if (aFeatured && !bFeatured) return -1;
+    if (!aFeatured && bFeatured) return 1;
+    return a.name.localeCompare(b.name);
+  });
+
+  const displayedCities = showAllCities ? sortedCities : sortedCities.slice(0, 6);
 
   return (
-    <section className="pt-20 lg:pt-0 lg:min-h-screen flex flex-col">
-      {/* Hero Section */}
-      <div className="flex-1 flex flex-col lg:flex-row">
-        {/* Left - Content */}
-        <div className="flex-1 flex flex-col justify-center px-6 lg:px-8 xl:px-16 py-16 lg:py-0">
-          <div className="max-w-xl">
-            {/* Eyebrow */}
-            <p 
-              className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-6 animate-fade-up"
-              style={{ animationDelay: '0.1s' }}
-            >
-              Curated destinations worldwide
-            </p>
-            
-            {/* Main Headline */}
-            <h1 
-              className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-foreground leading-[1.1] mb-8 animate-fade-up"
-              style={{ animationDelay: '0.2s' }}
-            >
-              Discover places
-              <br />
-              that <span className="italic font-normal">matter</span>
-            </h1>
-            
-            {/* Subtitle */}
-            <p 
-              className="text-lg text-muted-foreground max-w-md mb-10 animate-fade-up"
-              style={{ animationDelay: '0.3s' }}
-            >
-              A carefully selected collection of restaurants, hotels, and cultural experiences.
-            </p>
+    <section className="min-h-[50vh] flex flex-col px-6 md:px-10 py-10 pb-6 md:pb-10">
+      <div className="w-full flex md:justify-start flex-1 items-center">
+        <div className="w-full md:w-1/2 md:ml-[calc(50%-2rem)] max-w-2xl flex flex-col h-full">
+          <div className="flex-1 flex items-center">
+            <div className="w-full">
+              {/* Greeting Hero - Urban Manual Style */}
+              <div className="space-y-6">
+                {/* Search Input */}
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder={`Search ${totalDestinations}+ destinations...`}
+                    className={cn(
+                      'w-full text-left text-xs uppercase tracking-[2px] font-medium',
+                      'placeholder:text-gray-300 dark:placeholder:text-gray-500',
+                      'focus:outline-none bg-transparent border-none',
+                      'text-black dark:text-white py-4'
+                    )}
+                  />
+                </div>
 
-            {/* CTA */}
-            <div 
-              className="flex flex-col sm:flex-row gap-4 animate-fade-up"
-              style={{ animationDelay: '0.4s' }}
-            >
-              <button className="inline-flex items-center justify-center gap-3 h-14 px-8 bg-foreground hover:bg-foreground/90 text-background rounded-full font-medium transition-colors">
-                Start exploring
-                <ArrowRight className="h-5 w-5" />
-              </button>
-              <button className="inline-flex items-center justify-center gap-3 h-14 px-8 border border-border hover:border-muted-foreground text-foreground rounded-full font-medium transition-colors">
-                View collections
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Right - Featured Image */}
-        {featuredDestination && (
-          <div 
-            className="hidden lg:block lg:w-[45%] xl:w-1/2 relative animate-fade-up"
-            style={{ animationDelay: '0.3s' }}
-          >
-            <div className="absolute inset-y-0 right-0 left-0 overflow-hidden">
-              <img
-                src={featuredDestination.image}
-                alt={featuredDestination.name}
-                className="w-full h-full object-cover"
-              />
-              {/* Gradient overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-background via-background/20 to-transparent w-1/3" />
-              
-              {/* Featured badge */}
-              <div className="absolute bottom-8 left-8 right-8">
-                <div className="bg-card/95 backdrop-blur-sm rounded-2xl p-6 shadow-elevated max-w-sm border border-border">
-                  <p className="text-xs tracking-wide uppercase text-muted-foreground mb-2">Featured</p>
-                  <h3 className="text-lg font-medium text-foreground mb-1">{featuredDestination.name}</h3>
-                  <p className="text-sm text-muted-foreground">{featuredDestination.category} · {featuredDestination.city}</p>
+                {/* Main Greeting */}
+                <div className="space-y-2">
+                  <h1 className="text-2xl md:text-3xl lg:text-4xl font-normal text-gray-900 dark:text-white leading-tight">
+                    Discover curated destinations
+                  </h1>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    A carefully selected collection of restaurants, hotels, and cultural experiences worldwide.
+                  </p>
                 </div>
               </div>
             </div>
           </div>
-        )}
-      </div>
 
-      {/* Filter Bar */}
-      <div className="border-t border-border bg-card/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-5">
-          <div className="flex flex-col lg:flex-row lg:items-center gap-6">
-            {/* Cities */}
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-2 lg:pb-0">
-              <span className="text-xs tracking-wide uppercase text-muted-foreground shrink-0 mr-2">City</span>
-              {cities.map((city) => (
-                <button
-                  key={city.id}
-                  onClick={() => onCityChange(city.id)}
-                  className={cn(
-                    "shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all",
-                    selectedCity === city.id
-                      ? "bg-foreground text-background"
-                      : "bg-secondary text-muted-foreground hover:bg-secondary/80 hover:text-foreground"
-                  )}
-                >
-                  {city.name}
-                </button>
-              ))}
-            </div>
+          {/* City and Category filters */}
+          <div className="flex-1 flex items-end">
+            <div className="w-full pt-6">
+              {/* City Filters */}
+              <div className="mb-[50px]">
+                <div className="flex flex-wrap gap-x-5 gap-y-3 text-xs">
+                  <button
+                    onClick={() => onCityChange('all')}
+                    className={cn(
+                      'transition-all duration-200 ease-out',
+                      selectedCity === 'all'
+                        ? 'font-medium text-black dark:text-white'
+                        : 'font-medium text-black/30 dark:text-gray-500 hover:text-black/60'
+                    )}
+                  >
+                    All Cities
+                  </button>
+                  {displayedCities.map((city) => (
+                    <button
+                      key={city.id}
+                      onClick={() => onCityChange(city.id === selectedCity ? 'all' : city.id)}
+                      className={cn(
+                        'transition-all duration-200 ease-out',
+                        selectedCity === city.id
+                          ? 'font-medium text-black dark:text-white'
+                          : 'font-medium text-black/30 dark:text-gray-500 hover:text-black/60'
+                      )}
+                    >
+                      {capitalizeCity(city.name)}
+                    </button>
+                  ))}
+                </div>
 
-            {/* Divider */}
-            <div className="hidden lg:block w-px h-8 bg-border" />
+                {cities.length > displayedCities.length && !showAllCities && (
+                  <button
+                    onClick={() => setShowAllCities(true)}
+                    className="mt-3 text-xs font-medium text-black/30 dark:text-gray-500 hover:text-black/60"
+                  >
+                    + More cities ({cities.length - displayedCities.length})
+                  </button>
+                )}
+                {showAllCities && (
+                  <button
+                    onClick={() => setShowAllCities(false)}
+                    className="mt-3 text-xs font-medium text-black/30 dark:text-gray-500 hover:text-black/60"
+                  >
+                    Show less
+                  </button>
+                )}
+              </div>
 
-            {/* Categories */}
-            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
-              <span className="text-xs tracking-wide uppercase text-muted-foreground shrink-0 mr-2">Type</span>
-              {categories.slice(0, 6).map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => onCategoryChange(category.id)}
-                  className={cn(
-                    "shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all",
-                    selectedCategory === category.id
-                      ? "bg-foreground text-background"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  {category.name}
-                </button>
-              ))}
+              {/* Category Filters */}
+              {categories.length > 0 && (
+                <div className="flex flex-wrap gap-x-5 gap-y-3 text-xs">
+                  <button
+                    onClick={() => onCategoryChange('all')}
+                    className={cn(
+                      'transition-all duration-200 ease-out',
+                      selectedCategory === 'all'
+                        ? 'font-medium text-black dark:text-white'
+                        : 'font-medium text-black/30 dark:text-gray-500 hover:text-black/60'
+                    )}
+                  >
+                    All Categories
+                  </button>
+                  {categories
+                    .slice()
+                    .sort((a, b) => {
+                      if (a.name.toLowerCase() === 'others') return 1;
+                      if (b.name.toLowerCase() === 'others') return -1;
+                      return 0;
+                    })
+                    .map((category) => (
+                      <button
+                        key={category.id}
+                        onClick={() =>
+                          onCategoryChange(category.id === selectedCategory ? 'all' : category.id)
+                        }
+                        className={cn(
+                          'flex items-center gap-1.5 transition-all duration-200 ease-out',
+                          selectedCategory === category.id
+                            ? 'font-medium text-black dark:text-white'
+                            : 'font-medium text-black/30 dark:text-gray-500 hover:text-black/60'
+                        )}
+                      >
+                        {capitalizeCategory(category.name)}
+                      </button>
+                    ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

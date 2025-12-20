@@ -1,69 +1,72 @@
-import { ArrowRight } from 'lucide-react';
+'use client';
+
 import { Destination } from '@/types/destination';
-import { DestinationCard } from './DestinationCard';
+import { DestinationCard, DestinationCardSkeleton } from './DestinationCard';
 
 interface DestinationGridProps {
   destinations: Destination[];
   totalCount: number;
   onDestinationClick?: (destination: Destination) => void;
+  isLoading?: boolean;
 }
 
-export function DestinationGrid({ destinations, totalCount, onDestinationClick }: DestinationGridProps) {
-  // Split destinations for layout variety
-  const featured = destinations.slice(0, 2);
-  const regular = destinations.slice(2);
-
+export function DestinationGrid({
+  destinations,
+  totalCount,
+  onDestinationClick,
+  isLoading = false,
+}: DestinationGridProps) {
   return (
-    <section className="py-16 lg:py-24 px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
+    <section className="w-full px-6 md:px-10 py-8">
+      <div className="max-w-[1800px] mx-auto">
         {/* Section Header */}
-        <div className="flex items-end justify-between mb-12">
-          <div>
-            <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-3">Selected for you</p>
-            <h2 className="text-3xl lg:text-4xl font-light text-foreground">
-              Latest additions
+        <div className="mb-6 flex items-baseline justify-between">
+          <div className="flex items-baseline gap-3">
+            <h2 className="text-lg font-medium text-gray-900 dark:text-white">
+              Destinations
             </h2>
+            <span className="text-sm text-gray-500 dark:text-gray-400">
+              {totalCount} places
+            </span>
           </div>
-          <button className="hidden md:flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors group">
-            View all {totalCount}
-            <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-          </button>
         </div>
 
-        {/* Featured Row - Larger cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {featured.map((destination, index) => (
-            <DestinationCard
-              key={destination.id}
-              destination={destination}
-              index={index}
-              variant="featured"
-              onClick={onDestinationClick}
-            />
-          ))}
-        </div>
-
-        {/* Regular Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 lg:gap-6">
-          {regular.map((destination, index) => (
-            <DestinationCard
-              key={destination.id}
-              destination={destination}
-              index={index + 2}
-              variant="default"
-              onClick={onDestinationClick}
-            />
-          ))}
-        </div>
-
-        {/* Mobile View All */}
-        <div className="md:hidden mt-10 text-center">
-          <button className="inline-flex items-center gap-2 px-6 py-3 border border-border rounded-full text-sm font-medium text-foreground hover:border-muted-foreground transition-colors">
-            View all {totalCount} destinations
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        </div>
+        {/* Loading Skeleton */}
+        {isLoading ? (
+          <DestinationGridSkeleton count={20} />
+        ) : destinations.length === 0 ? (
+          <div className="text-center py-12 px-4">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              No destinations found.
+            </p>
+          </div>
+        ) : (
+          /* Urban Manual Grid - Responsive columns */
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 md:gap-6 items-start">
+            {destinations.map((destination, index) => (
+              <DestinationCard
+                key={destination.id}
+                destination={destination}
+                index={index}
+                onClick={() => onDestinationClick?.(destination)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </section>
+  );
+}
+
+/**
+ * Grid skeleton for loading state
+ */
+export function DestinationGridSkeleton({ count = 20 }: { count?: number }) {
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 md:gap-6 items-start">
+      {Array.from({ length: count }).map((_, index) => (
+        <DestinationCardSkeleton key={index} />
+      ))}
+    </div>
   );
 }

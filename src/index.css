@@ -6,50 +6,53 @@
 
 @layer base {
   :root {
-    /* Dark sophisticated palette */
-    --background: 222 47% 8%;
-    --foreground: 210 40% 98%;
+    /* Urban Manual Light Mode - Minimalist & Editorial */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
 
-    --card: 222 44% 11%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
 
-    --popover: 222 44% 11%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
 
-    /* Subtle blue-gray accent */
-    --primary: 210 40% 98%;
-    --primary-foreground: 222 47% 8%;
+    --primary: 0 0% 0%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 222 40% 16%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 9%;
 
-    --muted: 222 35% 18%;
-    --muted-foreground: 215 20% 55%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
 
-    --accent: 222 40% 20%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 9%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 222 30% 18%;
-    --input: 222 30% 18%;
-    --ring: 210 40% 98%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 0 0% 0%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
 
-    /* Custom tokens */
-    --surface-elevated: 222 40% 14%;
-    --surface-hover: 222 35% 20%;
-    --text-secondary: 215 20% 65%;
-    --text-tertiary: 215 15% 45%;
-    --accent-blue: 210 100% 60%;
-    --accent-green: 150 50% 50%;
+    /* Custom tokens - Urban Manual Design System */
+    --surface-elevated: 0 0% 98%;
+    --surface-hover: 0 0% 96%;
+    --text-secondary: 0 0% 40%;
+    --text-tertiary: 0 0% 60%;
 
-    /* Shadows for dark theme */
-    --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.4);
-    --shadow-medium: 0 8px 30px -8px hsl(0 0% 0% / 0.5);
-    --shadow-elevated: 0 20px 50px -15px hsl(0 0% 0% / 0.6);
+    /* Accent Colors (Use Sparingly) */
+    --success: 152 69% 31%;
+    --warning: 38 92% 50%;
+    --error: 0 84% 60%;
+    --info: 217 91% 60%;
+
+    /* Shadows for light theme */
+    --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.05);
+    --shadow-medium: 0 8px 30px -8px hsl(0 0% 0% / 0.1);
+    --shadow-elevated: 0 20px 50px -15px hsl(0 0% 0% / 0.15);
 
     /* Typography */
     --font-body: 'Inter', system-ui, sans-serif;
@@ -59,14 +62,65 @@
     --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
     --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 222 44% 11%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 210 40% 98%;
-    --sidebar-primary-foreground: 222 47% 8%;
-    --sidebar-accent: 222 40% 16%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 222 30% 18%;
-    --sidebar-ring: 210 40% 98%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 0%;
+    --sidebar-primary: 0 0% 0%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 96%;
+    --sidebar-accent-foreground: 0 0% 9%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 0 0% 0%;
+  }
+
+  .dark {
+    /* Urban Manual Dark Mode */
+    --background: 0 0% 4%;
+    --foreground: 0 0% 100%;
+
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 100%;
+
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 0%;
+
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 0 0% 12%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 0 0% 12%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 0 0% 100%;
+
+    /* Custom tokens - Dark Mode */
+    --surface-elevated: 0 0% 10%;
+    --surface-hover: 0 0% 15%;
+    --text-secondary: 0 0% 60%;
+    --text-tertiary: 0 0% 40%;
+
+    /* Shadows for dark theme */
+    --shadow-soft: 0 4px 20px -4px hsl(0 0% 0% / 0.4);
+    --shadow-medium: 0 8px 30px -8px hsl(0 0% 0% / 0.5);
+    --shadow-elevated: 0 20px 50px -15px hsl(0 0% 0% / 0.6);
+
+    --sidebar-background: 0 0% 7%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 0 0% 100%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 12%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 15%;
+    --sidebar-ring: 0 0% 100%;
   }
 }
 
@@ -110,19 +164,65 @@
     box-shadow: var(--shadow-elevated);
   }
 
-  /* Filter chip styles */
+  /* Urban Manual Filter chip styles */
   .chip {
-    @apply inline-flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200;
-    @apply bg-transparent text-muted-foreground hover:bg-secondary hover:text-foreground;
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl text-xs font-medium transition-all duration-200;
+    @apply border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400;
+    @apply hover:bg-gray-50 dark:hover:bg-gray-900;
   }
 
   .chip-active {
-    @apply border border-foreground/30 text-foreground bg-secondary;
+    @apply bg-black dark:bg-white text-white dark:text-black border-transparent;
   }
 
-  /* Card hover effect */
+  /* Card hover effect - Urban Manual style */
   .card-hover {
-    @apply transition-transform duration-300 hover:scale-[1.02];
+    @apply transition-transform duration-300 hover:scale-[1.01];
+  }
+
+  /* Urban Manual Button styles */
+  .btn-primary {
+    @apply px-6 py-3 bg-black dark:bg-white text-white dark:text-black text-sm font-medium rounded-full;
+    @apply hover:opacity-80 transition-opacity;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 border border-gray-200 dark:border-gray-800 rounded-full text-sm font-medium;
+    @apply hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors;
+  }
+
+  .btn-pill {
+    @apply px-3 py-1.5 border border-gray-200 dark:border-gray-800 rounded-2xl text-xs;
+    @apply hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors;
+  }
+
+  .btn-icon {
+    @apply p-2.5 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full;
+    @apply hover:opacity-80 transition-opacity shadow-lg;
+  }
+
+  /* Urban Manual Card wrapper */
+  .card-wrapper {
+    @apply group relative;
+  }
+
+  .card-media {
+    @apply relative aspect-video overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-800;
+    @apply border border-gray-200 dark:border-gray-800;
+  }
+
+  .card-title {
+    @apply font-medium text-sm leading-tight line-clamp-2 text-black dark:text-white;
+  }
+
+  .card-meta {
+    @apply flex items-center gap-1.5;
+  }
+
+  /* Focus ring for accessibility */
+  .focus-ring {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-black dark:focus-visible:ring-white;
+    @apply focus-visible:ring-offset-2 focus-visible:ring-offset-background;
   }
 }
 
@@ -180,12 +280,35 @@
     overflow: hidden;
   }
 
-  /* Scrollbar styling for dark theme */
+  /* Scrollbar styling */
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
-  
+
   .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 9999px;
+  }
+
+  /* No scrollbar utility */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
