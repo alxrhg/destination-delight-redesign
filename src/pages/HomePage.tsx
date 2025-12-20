@@ -20,20 +20,29 @@ export default function HomePage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
-  const { data, isLoading } = usePaginatedDestinations(currentPage);
+  // Get the city/category names for filtering
+  const cityName = mockCities.find(c => c.id === selectedCity)?.name;
+  const categoryName = mockCategories.find(c => c.id === selectedCategory)?.name;
+
+  const { data, isLoading } = usePaginatedDestinations(currentPage, {
+    city: cityName,
+    category: categoryName,
+  });
   
   const destinations = data?.destinations || [];
   const totalCount = data?.totalCount || 0;
   const totalPages = data?.totalPages || 1;
 
-  // Filter destinations based on selection
-  const filteredDestinations = destinations.filter((destination) => {
-    const cityMatch = selectedCity === 'all' ||
-      destination.city?.toLowerCase() === mockCities.find(c => c.id === selectedCity)?.name.toLowerCase();
-    const categoryMatch = selectedCategory === 'all' ||
-      destination.category?.toLowerCase() === mockCategories.find(c => c.id === selectedCategory)?.name.toLowerCase();
-    return cityMatch && categoryMatch;
-  });
+  // Reset to first page when filters change
+  const handleCityChange = (city: string) => {
+    setSelectedCity(city);
+    setCurrentPage(0);
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category);
+    setCurrentPage(0);
+  };
 
   const handleDestinationClick = (destination: SupabaseDestination) => {
     setSelectedDestination(destination);
@@ -46,11 +55,7 @@ export default function HomePage() {
   };
 
   // Map Supabase destinations to the format expected by DestinationGrid
-  const displayDestinations = filteredDestinations.length > 0 || selectedCity !== 'all' || selectedCategory !== 'all' 
-    ? filteredDestinations 
-    : destinations;
-
-  const mappedDestinations = displayDestinations.map(d => ({
+  const mappedDestinations = destinations.map(d => ({
     id: d.slug,
     name: d.name,
     category: d.category,
@@ -81,8 +86,8 @@ export default function HomePage() {
             categories={mockCategories}
             selectedCity={selectedCity}
             selectedCategory={selectedCategory}
-            onCityChange={setSelectedCity}
-            onCategoryChange={setSelectedCategory}
+            onCityChange={handleCityChange}
+            onCategoryChange={handleCategoryChange}
             totalDestinations={totalCount}
             featuredDestination={mappedDestinations[0]}
           />
