@@ -29,7 +29,6 @@ function capitalizeCategory(category: string): string {
     .join(' ');
 }
 
-// Featured cities to show first
 const FEATURED_CITIES = ['Taipei', 'Tokyo', 'New York', 'London', 'Paris', 'Barcelona'];
 
 export function HeroSearch({
@@ -42,9 +41,7 @@ export function HeroSearch({
   totalDestinations,
 }: HeroSearchProps) {
   const [showAllCities, setShowAllCities] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
 
-  // Sort cities: featured first, then alphabetically
   const sortedCities = [...cities].sort((a, b) => {
     const aFeatured = FEATURED_CITIES.includes(a.name);
     const bFeatured = FEATURED_CITIES.includes(b.name);
@@ -56,134 +53,107 @@ export function HeroSearch({
   const displayedCities = showAllCities ? sortedCities : sortedCities.slice(0, 6);
 
   return (
-    <section className="min-h-[50vh] flex flex-col px-6 md:px-10 py-10 pb-6 md:pb-10">
-      <div className="w-full flex md:justify-start flex-1 items-center">
-        <div className="w-full md:w-1/2 md:ml-[calc(50%-2rem)] max-w-2xl flex flex-col h-full">
-          <div className="flex-1 flex items-center">
-            <div className="w-full">
-              {/* Greeting Hero - Urban Manual Style */}
-              <div className="space-y-6">
-                {/* Search Input */}
-                <div className="relative">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder={`Search ${totalDestinations}+ destinations...`}
-                    className={cn(
-                      'w-full text-left text-xs uppercase tracking-[2px] font-medium',
-                      'placeholder:text-gray-300 dark:placeholder:text-gray-500',
-                      'focus:outline-none bg-transparent border-none',
-                      'text-black dark:text-white py-4'
-                    )}
-                  />
-                </div>
+    <section className="flex flex-col px-8 md:px-12 lg:px-16 py-16 md:py-24">
+      <div className="max-w-4xl">
+        {/* Main Heading - Editorial serif style */}
+        <div className="space-y-6 mb-16">
+          <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-normal text-foreground leading-[1.1] tracking-tight">
+            Conscious By Design
+          </h1>
+          <p className="text-base md:text-lg text-muted-foreground leading-relaxed max-w-2xl font-light">
+            A curated collection of {totalDestinations}+ destinations for those who understand that how we live is expressed through the places we inhabit. Each selection embodies our foundational principle of intentional discovery.
+          </p>
+        </div>
 
-                {/* Main Greeting */}
-                <div className="space-y-2">
-                  <h1 className="text-2xl md:text-3xl lg:text-4xl font-normal text-gray-900 dark:text-white leading-tight">
-                    Discover curated destinations
-                  </h1>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    A carefully selected collection of restaurants, hotels, and cultural experiences worldwide.
-                  </p>
-                </div>
-              </div>
+        {/* Filters Section */}
+        <div className="space-y-12">
+          {/* City Filters */}
+          <div>
+            <div className="flex flex-wrap gap-x-6 gap-y-3">
+              <button
+                onClick={() => onCityChange('all')}
+                className={cn(
+                  'text-sm tracking-wide transition-all duration-300',
+                  selectedCity === 'all'
+                    ? 'text-foreground'
+                    : 'text-muted-foreground/50 hover:text-muted-foreground'
+                )}
+              >
+                All Cities
+              </button>
+              {displayedCities.map((city) => (
+                <button
+                  key={city.id}
+                  onClick={() => onCityChange(city.id === selectedCity ? 'all' : city.id)}
+                  className={cn(
+                    'text-sm tracking-wide transition-all duration-300',
+                    selectedCity === city.id
+                      ? 'text-foreground'
+                      : 'text-muted-foreground/50 hover:text-muted-foreground'
+                  )}
+                >
+                  {capitalizeCity(city.name)}
+                </button>
+              ))}
             </div>
+
+            {cities.length > displayedCities.length && !showAllCities && (
+              <button
+                onClick={() => setShowAllCities(true)}
+                className="mt-4 text-xs uppercase tracking-widest text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+              >
+                + {cities.length - displayedCities.length} more
+              </button>
+            )}
+            {showAllCities && (
+              <button
+                onClick={() => setShowAllCities(false)}
+                className="mt-4 text-xs uppercase tracking-widest text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+              >
+                Show less
+              </button>
+            )}
           </div>
 
-          {/* City and Category filters */}
-          <div className="flex-1 flex items-end">
-            <div className="w-full pt-6">
-              {/* City Filters */}
-              <div className="mb-[50px]">
-                <div className="flex flex-wrap gap-x-5 gap-y-3 text-xs">
+          {/* Category Filters */}
+          {categories.length > 0 && (
+            <div className="flex flex-wrap gap-x-6 gap-y-3">
+              <button
+                onClick={() => onCategoryChange('all')}
+                className={cn(
+                  'text-sm tracking-wide transition-all duration-300',
+                  selectedCategory === 'all'
+                    ? 'text-foreground'
+                    : 'text-muted-foreground/50 hover:text-muted-foreground'
+                )}
+              >
+                All
+              </button>
+              {categories
+                .slice()
+                .sort((a, b) => {
+                  if (a.name.toLowerCase() === 'others') return 1;
+                  if (b.name.toLowerCase() === 'others') return -1;
+                  return 0;
+                })
+                .map((category) => (
                   <button
-                    onClick={() => onCityChange('all')}
+                    key={category.id}
+                    onClick={() =>
+                      onCategoryChange(category.id === selectedCategory ? 'all' : category.id)
+                    }
                     className={cn(
-                      'transition-all duration-200 ease-out',
-                      selectedCity === 'all'
-                        ? 'font-medium text-black dark:text-white'
-                        : 'font-medium text-black/30 dark:text-gray-500 hover:text-black/60'
+                      'text-sm tracking-wide transition-all duration-300',
+                      selectedCategory === category.id
+                        ? 'text-foreground'
+                        : 'text-muted-foreground/50 hover:text-muted-foreground'
                     )}
                   >
-                    All Cities
+                    {capitalizeCategory(category.name)}
                   </button>
-                  {displayedCities.map((city) => (
-                    <button
-                      key={city.id}
-                      onClick={() => onCityChange(city.id === selectedCity ? 'all' : city.id)}
-                      className={cn(
-                        'transition-all duration-200 ease-out',
-                        selectedCity === city.id
-                          ? 'font-medium text-black dark:text-white'
-                          : 'font-medium text-black/30 dark:text-gray-500 hover:text-black/60'
-                      )}
-                    >
-                      {capitalizeCity(city.name)}
-                    </button>
-                  ))}
-                </div>
-
-                {cities.length > displayedCities.length && !showAllCities && (
-                  <button
-                    onClick={() => setShowAllCities(true)}
-                    className="mt-3 text-xs font-medium text-black/30 dark:text-gray-500 hover:text-black/60"
-                  >
-                    + More cities ({cities.length - displayedCities.length})
-                  </button>
-                )}
-                {showAllCities && (
-                  <button
-                    onClick={() => setShowAllCities(false)}
-                    className="mt-3 text-xs font-medium text-black/30 dark:text-gray-500 hover:text-black/60"
-                  >
-                    Show less
-                  </button>
-                )}
-              </div>
-
-              {/* Category Filters */}
-              {categories.length > 0 && (
-                <div className="flex flex-wrap gap-x-5 gap-y-3 text-xs">
-                  <button
-                    onClick={() => onCategoryChange('all')}
-                    className={cn(
-                      'transition-all duration-200 ease-out',
-                      selectedCategory === 'all'
-                        ? 'font-medium text-black dark:text-white'
-                        : 'font-medium text-black/30 dark:text-gray-500 hover:text-black/60'
-                    )}
-                  >
-                    All Categories
-                  </button>
-                  {categories
-                    .slice()
-                    .sort((a, b) => {
-                      if (a.name.toLowerCase() === 'others') return 1;
-                      if (b.name.toLowerCase() === 'others') return -1;
-                      return 0;
-                    })
-                    .map((category) => (
-                      <button
-                        key={category.id}
-                        onClick={() =>
-                          onCategoryChange(category.id === selectedCategory ? 'all' : category.id)
-                        }
-                        className={cn(
-                          'flex items-center gap-1.5 transition-all duration-200 ease-out',
-                          selectedCategory === category.id
-                            ? 'font-medium text-black dark:text-white'
-                            : 'font-medium text-black/30 dark:text-gray-500 hover:text-black/60'
-                        )}
-                      >
-                        {capitalizeCategory(category.name)}
-                      </button>
-                    ))}
-                </div>
-              )}
+                ))}
             </div>
-          </div>
+          )}
         </div>
       </div>
     </section>

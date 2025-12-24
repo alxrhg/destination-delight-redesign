@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, memo } from 'react';
-import { MapPin, Check, Heart } from 'lucide-react';
+import { MapPin, Heart } from 'lucide-react';
 import { Destination } from '@/types/destination';
 import { cn } from '@/lib/utils';
 
@@ -22,8 +22,7 @@ function capitalizeCity(city: string): string {
 }
 
 /**
- * Urban Manual Destination Card with hover interactions and progressive loading
- * Memoized to prevent unnecessary re-renders
+ * Editorial Destination Card with refined hover interactions
  */
 export const DestinationCard = memo(function DestinationCard({
   destination,
@@ -39,7 +38,6 @@ export const DestinationCard = memo(function DestinationCard({
   const [isSaved, setIsSaved] = useState(false);
   const cardRef = useRef<HTMLButtonElement>(null);
 
-  // Intersection Observer for progressive loading
   useEffect(() => {
     if (!cardRef.current) return;
 
@@ -83,28 +81,26 @@ export const DestinationCard = memo(function DestinationCard({
       onClick={handleClick}
       type="button"
       className={cn(
-        'group relative w-full flex flex-col transition-all duration-300 ease-out',
+        'group relative w-full flex flex-col transition-all duration-300',
         'cursor-pointer text-left focus-ring',
-        'hover:scale-[1.01]',
-        'active:scale-[0.98]',
+        'active:scale-[0.99]',
         className
       )}
       aria-label={`View ${destination.name} in ${capitalizeCity(destination.city)}`}
     >
-      {/* Image Container with Progressive Loading */}
+      {/* Image Container */}
       <div
         className={cn(
-          'relative aspect-video overflow-hidden rounded-2xl',
-          'bg-gray-100 dark:bg-gray-800',
-          'border border-gray-200 dark:border-gray-800',
-          'transition-all duration-300 ease-out',
-          'mb-3',
+          'relative aspect-[4/5] overflow-hidden',
+          'bg-muted',
+          'transition-all duration-500',
+          'mb-4',
           isLoaded ? 'opacity-100' : 'opacity-0'
         )}
       >
         {/* Skeleton while loading */}
         {!isLoaded && isInView && (
-          <div className="absolute inset-0 animate-pulse bg-gray-200 dark:bg-gray-700" />
+          <div className="absolute inset-0 animate-pulse bg-secondary" />
         )}
 
         {/* Actual Image */}
@@ -114,8 +110,8 @@ export const DestinationCard = memo(function DestinationCard({
             alt={`${destination.name} in ${capitalizeCity(destination.city)}${destination.category ? ` - ${destination.category}` : ''}`}
             className={cn(
               'w-full h-full object-cover',
-              'transition-all duration-500 ease-out',
-              'group-hover:scale-105',
+              'transition-transform duration-700 ease-out',
+              'group-hover:scale-[1.03]',
               isLoaded ? 'opacity-100' : 'opacity-0'
             )}
             loading={index < 6 ? 'eager' : 'lazy'}
@@ -126,18 +122,17 @@ export const DestinationCard = memo(function DestinationCard({
             }}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-gray-300 dark:text-gray-700">
-            <MapPin className="h-12 w-12 opacity-20 transition-transform duration-300 group-hover:scale-105" />
+          <div className="w-full h-full flex items-center justify-center bg-secondary">
+            <MapPin className="h-8 w-8 text-muted-foreground/30" />
           </div>
         )}
 
-        {/* Hover Overlay */}
+        {/* Subtle overlay on hover */}
         <div
           className={cn(
             'absolute inset-0',
-            'bg-gradient-to-t from-black/60 via-transparent to-transparent',
-            'opacity-0 group-hover:opacity-100',
-            'transition-opacity duration-300',
+            'bg-foreground/0 group-hover:bg-foreground/5',
+            'transition-all duration-500',
             'pointer-events-none'
           )}
         />
@@ -146,20 +141,18 @@ export const DestinationCard = memo(function DestinationCard({
         {showQuickActions && (
           <div
             className={cn(
-              'absolute top-2 right-2 z-20',
+              'absolute top-4 right-4 z-20',
               'opacity-0 group-hover:opacity-100',
-              'translate-y-1 group-hover:translate-y-0',
-              'transition-all duration-200'
+              'transition-opacity duration-300'
             )}
           >
             <button
               onClick={handleSave}
               className={cn(
-                'p-2.5 rounded-full backdrop-blur-sm shadow-lg',
+                'p-3 bg-background/95 backdrop-blur-sm',
                 'transition-all duration-200',
-                isSaved
-                  ? 'bg-white text-red-500'
-                  : 'bg-white/90 dark:bg-gray-900/90 text-gray-600 dark:text-gray-400 hover:text-red-500'
+                'hover:bg-background',
+                isSaved ? 'text-accent' : 'text-muted-foreground hover:text-foreground'
               )}
               aria-label={isSaved ? 'Remove from saved' : 'Save destination'}
             >
@@ -168,70 +161,48 @@ export const DestinationCard = memo(function DestinationCard({
           </div>
         )}
 
-        {/* Visited Check Badge - Center */}
-        {isVisited && (
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg">
-            <Check className="w-5 h-5 text-gray-900 dark:text-white stroke-[3]" />
-          </div>
-        )}
-
-        {/* Rating Badge - Bottom Right */}
-        {typeof destination.rating === 'number' && destination.rating > 0 && (
+        {/* Category Tag - Bottom Left */}
+        {destination.category && (
           <div
             className={cn(
-              'absolute bottom-2 right-2 z-10',
-              'px-3 py-1 border border-gray-200 dark:border-gray-800',
-              'rounded-2xl text-gray-600 dark:text-gray-400 text-xs',
-              'bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm',
-              'flex items-center gap-1.5',
-              'transform scale-100 group-hover:scale-[1.02]',
-              'transition-transform duration-300',
-              'shadow-sm group-hover:shadow-md'
+              'absolute bottom-4 left-4 z-10',
+              'px-3 py-1.5',
+              'bg-background/95 backdrop-blur-sm',
+              'text-[10px] uppercase tracking-widest text-muted-foreground'
             )}
           >
-            <svg className="h-3 w-3 text-yellow-400 fill-current" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-            </svg>
-            <span>{destination.rating.toFixed(1)}</span>
+            {destination.category}
           </div>
         )}
       </div>
 
       {/* Info Section */}
-      <div className="flex-1 flex flex-col">
-        <div>
-          <h3
-            className={cn(
-              'text-sm font-medium text-gray-900 dark:text-white',
-              'line-clamp-2',
-              'transition-colors duration-200',
-              'group-hover:text-gray-700 dark:group-hover:text-gray-200'
-            )}
-          >
-            {destination.name}
-          </h3>
+      <div className="flex-1 flex flex-col gap-1">
+        <h3
+          className={cn(
+            'font-display text-lg font-normal text-foreground',
+            'leading-tight',
+            'transition-colors duration-200',
+            'group-hover:text-muted-foreground'
+          )}
+        >
+          {destination.name}
+        </h3>
 
-          {/* Micro Description - Category and City */}
-          <div className="text-xs text-gray-600 dark:text-gray-400 line-clamp-1 mt-0.5">
-            {destination.category && destination.city
-              ? `${destination.category} in ${capitalizeCity(destination.city)}`
-              : destination.city
-                ? capitalizeCity(destination.city)
-                : destination.category || ''}
+        <p className="text-xs text-muted-foreground tracking-wide">
+          {capitalizeCity(destination.city)}
+          {destination.country && `, ${destination.country}`}
+        </p>
+
+        {/* Rating */}
+        {typeof destination.rating === 'number' && destination.rating > 0 && (
+          <div className="flex items-center gap-1.5 mt-1">
+            <span className="text-xs text-muted-foreground">
+              {destination.rating.toFixed(1)}
+            </span>
           </div>
-        </div>
-      </div>
-
-      {/* Focus Ring for Accessibility */}
-      <div
-        className={cn(
-          'absolute inset-0 rounded-2xl',
-          'ring-2 ring-offset-2 ring-black dark:ring-white',
-          'opacity-0 focus-within:opacity-100',
-          'transition-opacity duration-200',
-          'pointer-events-none'
         )}
-      />
+      </div>
     </button>
   );
 });
@@ -241,10 +212,12 @@ export const DestinationCard = memo(function DestinationCard({
  */
 export function DestinationCardSkeleton() {
   return (
-    <div className="space-y-2 animate-pulse">
-      <div className="aspect-video rounded-2xl bg-gray-100 dark:bg-gray-800" />
-      <div className="h-3 rounded bg-gray-100 dark:bg-gray-800 w-3/4" />
-      <div className="h-2 rounded bg-gray-100 dark:bg-gray-800 w-1/2" />
+    <div className="space-y-4 animate-pulse">
+      <div className="aspect-[4/5] bg-secondary" />
+      <div className="space-y-2">
+        <div className="h-5 bg-secondary w-3/4" />
+        <div className="h-3 bg-secondary w-1/2" />
+      </div>
     </div>
   );
 }

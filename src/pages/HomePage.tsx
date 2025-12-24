@@ -20,7 +20,6 @@ export default function HomePage() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
 
-  // Get the city/category names for filtering
   const cityName = mockCities.find(c => c.id === selectedCity)?.name;
   const categoryName = mockCategories.find(c => c.id === selectedCategory)?.name;
 
@@ -33,7 +32,6 @@ export default function HomePage() {
   const totalCount = data?.totalCount || 0;
   const totalPages = data?.totalPages || 1;
 
-  // Reset to first page when filters change
   const handleCityChange = (city: string) => {
     setSelectedCity(city);
     setCurrentPage(0);
@@ -54,7 +52,6 @@ export default function HomePage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Map Supabase destinations to the format expected by DestinationGrid
   const mappedDestinations = destinations.map(d => ({
     id: d.slug,
     name: d.name,
@@ -69,16 +66,16 @@ export default function HomePage() {
   return (
     <>
       <Helmet>
-        <title>Urban Manual® | Curated Destinations Worldwide</title>
+        <title>Urban Manual | Curated Destinations Worldwide</title>
         <meta name="description" content={`Discover ${totalCount}+ curated restaurants, hotels, and hidden gems worldwide.`} />
       </Helmet>
 
-      <div className="min-h-screen bg-white dark:bg-gray-950">
+      <div className="min-h-screen bg-background">
         <Header />
 
-        <main id="main-content" className="relative dark:text-white" role="main">
+        <main id="main-content" className="relative" role="main">
           <h1 className="sr-only">
-            Discover the World's Best Hotels, Restaurants & Travel Destinations - Urban Manual
+            Discover the World's Best Hotels, Restaurants & Travel Destinations
           </h1>
 
           <HeroSearch
@@ -93,8 +90,10 @@ export default function HomePage() {
           />
 
           {isLoading ? (
-            <div className="py-16 text-center text-gray-500 dark:text-gray-400">
-              Loading destinations...
+            <div className="py-24 text-center">
+              <p className="text-sm text-muted-foreground tracking-wide">
+                Loading destinations...
+              </p>
             </div>
           ) : (
             <>
@@ -109,30 +108,30 @@ export default function HomePage() {
 
               {/* Pagination Controls */}
               {totalPages > 1 && (
-                <div className="py-8 px-6 md:px-10">
-                  <div className="max-w-[1800px] mx-auto flex items-center justify-center gap-2">
+                <div className="py-16 px-8 md:px-12 lg:px-16">
+                  <div className="max-w-7xl mx-auto flex items-center justify-center gap-4">
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
                       onClick={() => handlePageChange(currentPage - 1)}
                       disabled={currentPage === 0}
-                      className="gap-1"
+                      className="text-xs uppercase tracking-widest font-normal"
                     >
-                      <ChevronLeft className="h-4 w-4" />
+                      <ChevronLeft className="h-4 w-4 mr-1" />
                       Previous
                     </Button>
 
                     <div className="flex items-center gap-1">
-                      {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                      {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                         let pageNum: number;
-                        if (totalPages <= 7) {
+                        if (totalPages <= 5) {
                           pageNum = i;
-                        } else if (currentPage < 3) {
+                        } else if (currentPage < 2) {
                           pageNum = i;
-                        } else if (currentPage > totalPages - 4) {
-                          pageNum = totalPages - 7 + i;
+                        } else if (currentPage > totalPages - 3) {
+                          pageNum = totalPages - 5 + i;
                         } else {
-                          pageNum = currentPage - 3 + i;
+                          pageNum = currentPage - 2 + i;
                         }
 
                         return (
@@ -141,7 +140,7 @@ export default function HomePage() {
                             variant={currentPage === pageNum ? "default" : "ghost"}
                             size="sm"
                             onClick={() => handlePageChange(pageNum)}
-                            className="w-9 h-9 p-0"
+                            className="w-10 h-10 p-0 text-xs"
                           >
                             {pageNum + 1}
                           </Button>
@@ -150,19 +149,19 @@ export default function HomePage() {
                     </div>
 
                     <Button
-                      variant="outline"
+                      variant="ghost"
                       size="sm"
                       onClick={() => handlePageChange(currentPage + 1)}
                       disabled={currentPage >= totalPages - 1}
-                      className="gap-1"
+                      className="text-xs uppercase tracking-widest font-normal"
                     >
                       Next
-                      <ChevronRight className="h-4 w-4" />
+                      <ChevronRight className="h-4 w-4 ml-1" />
                     </Button>
                   </div>
                   
-                  <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
-                    Page {currentPage + 1} of {totalPages} • {totalCount} destinations
+                  <p className="text-center text-xs text-muted-foreground tracking-wide mt-6">
+                    Page {currentPage + 1} of {totalPages}
                   </p>
                 </div>
               )}
