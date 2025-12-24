@@ -17,32 +17,32 @@ export function DestinationGrid({
   isLoading = false,
 }: DestinationGridProps) {
   return (
-    <section className="w-full px-6 md:px-10 py-8">
-      <div className="max-w-[1800px] mx-auto">
+    <section className="w-full px-8 md:px-12 lg:px-16 py-12">
+      <div className="max-w-7xl mx-auto">
         {/* Section Header */}
-        <div className="mb-6 flex items-baseline justify-between">
-          <div className="flex items-baseline gap-3">
-            <h2 className="text-lg font-medium text-gray-900 dark:text-white">
-              Destinations
+        <div className="mb-12 flex items-baseline justify-between border-b border-border pb-6">
+          <div className="flex items-baseline gap-4">
+            <h2 className="font-display text-2xl text-foreground">
+              Selected Places
             </h2>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              {totalCount} places
+            <span className="text-sm text-muted-foreground tracking-wide">
+              {totalCount}
             </span>
           </div>
         </div>
 
         {/* Loading Skeleton */}
         {isLoading ? (
-          <DestinationGridSkeleton count={20} />
+          <DestinationGridSkeleton count={12} />
         ) : destinations.length === 0 ? (
-          <div className="text-center py-12 px-4">
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+          <div className="text-center py-24">
+            <p className="text-sm text-muted-foreground">
               No destinations found.
             </p>
           </div>
         ) : (
-          /* Urban Manual Grid - Responsive columns */
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 md:gap-6 items-start">
+          /* Editorial Grid - Fewer columns, more breathing room */
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-10 lg:gap-12">
             {destinations.map((destination, index) => (
               <DestinationCard
                 key={destination.id}
@@ -61,9 +61,9 @@ export function DestinationGrid({
 /**
  * Grid skeleton for loading state
  */
-export function DestinationGridSkeleton({ count = 20 }: { count?: number }) {
+export function DestinationGridSkeleton({ count = 12 }: { count?: number }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 md:gap-6 items-start">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 md:gap-10 lg:gap-12">
       {Array.from({ length: count }).map((_, index) => (
         <DestinationCardSkeleton key={index} />
       ))}

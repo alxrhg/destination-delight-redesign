@@ -211,6 +211,108 @@ export type Database = {
           },
         ]
       }
+      analytics_events: {
+        Row: {
+          created_at: string | null
+          event_data: Json | null
+          event_type: string
+          id: number
+          page_path: string | null
+          referrer: string | null
+          session_id: string | null
+          timestamp: string | null
+          user_agent: string | null
+          user_id: string | null
+          viewport_height: number | null
+          viewport_width: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type: string
+          id?: number
+          page_path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          timestamp?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          viewport_height?: number | null
+          viewport_width?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_type?: string
+          id?: number
+          page_path?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          timestamp?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+          viewport_height?: number | null
+          viewport_width?: number | null
+        }
+        Relationships: []
+      }
+      analytics_sessions: {
+        Row: {
+          bounce: boolean | null
+          browser: string | null
+          created_at: string | null
+          device_type: string | null
+          duration_seconds: number | null
+          end_time: string | null
+          entry_page: string | null
+          event_count: number | null
+          exit_page: string | null
+          id: string
+          os: string | null
+          page_count: number | null
+          session_id: string
+          start_time: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          bounce?: boolean | null
+          browser?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          duration_seconds?: number | null
+          end_time?: string | null
+          entry_page?: string | null
+          event_count?: number | null
+          exit_page?: string | null
+          id?: string
+          os?: string | null
+          page_count?: number | null
+          session_id: string
+          start_time?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          bounce?: boolean | null
+          browser?: string | null
+          created_at?: string | null
+          device_type?: string | null
+          duration_seconds?: number | null
+          end_time?: string | null
+          entry_page?: string | null
+          event_count?: number | null
+          exit_page?: string | null
+          id?: string
+          os?: string | null
+          page_count?: number | null
+          session_id?: string
+          start_time?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       architects: {
         Row: {
           bio: string | null
@@ -1171,6 +1273,7 @@ export type Database = {
           best_visit_months: number[] | null
           booking_url: string | null
           brand: string | null
+          brand_id: string | null
           business_status: string | null
           category: string
           cf_factors: string | null
@@ -1368,6 +1471,7 @@ export type Database = {
           best_visit_months?: number[] | null
           booking_url?: string | null
           brand?: string | null
+          brand_id?: string | null
           business_status?: string | null
           category: string
           cf_factors?: string | null
@@ -1565,6 +1669,7 @@ export type Database = {
           best_visit_months?: number[] | null
           booking_url?: string | null
           brand?: string | null
+          brand_id?: string | null
           business_status?: string | null
           category?: string
           cf_factors?: string | null
@@ -1740,6 +1845,13 @@ export type Database = {
             columns: ["architect_id"]
             isOneToOne: false
             referencedRelation: "architects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "destinations_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
             referencedColumns: ["id"]
           },
           {
@@ -2733,6 +2845,54 @@ export type Database = {
           },
         ]
       }
+      performance_metrics: {
+        Row: {
+          created_at: string | null
+          delta: number | null
+          id: number
+          metric_id: string | null
+          metric_name: string
+          metric_value: number
+          navigation_type: string | null
+          page_path: string | null
+          rating: string | null
+          session_id: string | null
+          timestamp: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          delta?: number | null
+          id?: number
+          metric_id?: string | null
+          metric_name: string
+          metric_value: number
+          navigation_type?: string | null
+          page_path?: string | null
+          rating?: string | null
+          session_id?: string | null
+          timestamp?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          delta?: number | null
+          id?: number
+          metric_id?: string | null
+          metric_name?: string
+          metric_value?: number
+          navigation_type?: string | null
+          page_path?: string | null
+          rating?: string | null
+          session_id?: string | null
+          timestamp?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       personalization_scores: {
         Row: {
           cache: Json | null
@@ -3679,6 +3839,25 @@ export type Database = {
         }
         Relationships: []
       }
+      performance_metrics_daily: {
+        Row: {
+          avg_value: number | null
+          date: string | null
+          good_count: number | null
+          max_value: number | null
+          metric_name: string | null
+          min_value: number | null
+          needs_improvement_count: number | null
+          p50_value: number | null
+          p75_value: number | null
+          p90_value: number | null
+          p95_value: number | null
+          p99_value: number | null
+          poor_count: number | null
+          sample_count: number | null
+        }
+        Relationships: []
+      }
       popular_destinations: {
         Row: {
           category: string | null
@@ -3746,6 +3925,7 @@ export type Database = {
         Args: { trip_uuid: string }
         Returns: boolean
       }
+      cleanup_old_analytics_data: { Args: never; Returns: number }
       compute_co_visitation: { Args: never; Returns: undefined }
       compute_destination_relationships: { Args: never; Returns: undefined }
       compute_enhanced_social_trending_scores: {
@@ -3870,6 +4050,17 @@ export type Database = {
           role: string
         }[]
       }
+      get_daily_analytics: {
+        Args: { p_days?: number }
+        Returns: {
+          avg_session_duration: number
+          date: string
+          page_views: number
+          total_events: number
+          unique_sessions: number
+          unique_users: number
+        }[]
+      }
       get_destination_history: {
         Args: { p_limit?: number; p_slug: string }
         Returns: {
@@ -3912,6 +4103,15 @@ export type Database = {
           slug: string
         }[]
       }
+      get_event_counts: {
+        Args: { p_end_date?: string; p_start_date?: string }
+        Returns: {
+          event_count: number
+          event_type: string
+          unique_sessions: number
+          unique_users: number
+        }[]
+      }
       get_nested_destinations: {
         Args: { parent_id: number }
         Returns: {
@@ -3950,6 +4150,16 @@ export type Database = {
       get_or_create_session: {
         Args: { p_session_token?: string; p_user_id?: string }
         Returns: string
+      }
+      get_performance_trends: {
+        Args: { p_days?: number; p_metric_name: string }
+        Returns: {
+          avg_value: number
+          date: string
+          good_rate: number
+          p75_value: number
+          sample_count: number
+        }[]
       }
       get_popular_destinations: {
         Args: { limit_count?: number }
@@ -4029,6 +4239,17 @@ export type Database = {
           visited_at: string
         }[]
       }
+      get_web_vitals_summary: {
+        Args: { p_end_date?: string; p_start_date?: string }
+        Returns: {
+          avg_value: number
+          good_percentage: number
+          metric_name: string
+          p75_value: number
+          sample_count: number
+          status: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -4037,6 +4258,10 @@ export type Database = {
         Returns: boolean
       }
       increment_saves: { Args: { dest_slug: string }; Returns: undefined }
+      increment_session_event_count: {
+        Args: { p_session_id: string }
+        Returns: undefined
+      }
       increment_views: { Args: { dest_id: number }; Returns: undefined }
       increment_views_by_slug: {
         Args: { dest_slug: string }
@@ -4109,6 +4334,7 @@ export type Database = {
             }[]
           }
       migrate_architect_from_text: { Args: never; Returns: undefined }
+      migrate_brand_from_text: { Args: never; Returns: undefined }
       refresh_destination_stats: { Args: never; Returns: undefined }
       search_by_ai_fields: {
         Args: { match_count?: number; search_term: string }
